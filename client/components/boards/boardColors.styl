@@ -6,6 +6,12 @@
 // create a mixin/macro that would generate 6 versions of a given property and
 // dispatch this list in the other stylus files.
 setBoardColor(color)
+  .list
+    background-color: color
+
+  .swimlane
+    background-color: color
+
   &#header,
   &.sk-spinner div,
   .board-backgrounds-list &.background-box,
