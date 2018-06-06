@@ -16,7 +16,7 @@
     }
   ],
   "display": "standalone",
-  "background_color": "#dedede",
-  "theme_color": "#dedede",
+  "background_color": "green",
+  "theme_color": "green",
   "start_url": "/"
 }
