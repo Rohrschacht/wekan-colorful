@@ -1,5 +1,17 @@
 # Wekan - Open Source kanban
 
+## Fork of [wekan/wekan](https://github.com/wekan/wekan)
+
+This fork of the original [wekan](https://github.com/wekan/wekan) was created to implement a version of the awesome software
+that sets the background color of the entire board, rather than just the top bar, when setting the color of the board.
+
+The changes include:
+* make list and swimlane change background color in function setBoardColor in boardColors.styl
+* make list-header change background and border color in function setBoardColor in boardColors.styl
+* make the list-header-name white for readability purposes
+* make open-list-composer and open-minicard-composer white for readability purposes
+* change docker-compose.yml to build from current directory, rather than using an image
+
 [![Contributors](https://img.shields.io/github/contributors/wekan/wekan.svg "Contributors")](https://github.com/wekan/wekan/graphs/contributors)
 [![Docker Repository on Quay](https://quay.io/repository/wekan/wekan/status "Docker Repository on Quay")](https://quay.io/repository/wekan/wekan)
 [![Docker Hub container status](https://img.shields.io/docker/build/wekanteam/wekan.svg "Docker Hub container status")](https://hub.docker.com/r/wekanteam/wekan)
