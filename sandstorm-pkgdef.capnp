@@ -22,10 +22,10 @@ const pkgdef :Spk.PackageDefinition = (
     appTitle = (defaultText = "Wekan"),
     # The name of the app as it is displayed to the user.
 
-    appVersion = 87,
+    appVersion = 295,
     # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "1.02.0~2018-05-26"),
+    appMarketingVersion = (defaultText = "2.93.0~2019-06-28"),
     # Human-readable presentation of the app version.
 
     minUpgradableAppVersion = 0,
@@ -226,7 +226,7 @@ const pkgdef :Spk.PackageDefinition = (
         verbPhrase = (defaultText = "removed from card"),
       ), ],
     ),
-
+    apiPath = "/",
     saveIdentityCaps = true,
   ),
 );
@@ -237,6 +237,22 @@ const myCommand :Spk.Manifest.Command = (
   environ = [
     # Note that this defines the *entire* environment seen by your app.
     (key = "PATH", value = "/usr/local/bin:/usr/bin:/bin"),
+    (key = "WITH_API", value = "true"),
+    (key = "MATOMO_ADDRESS", value=""),
+    (key = "MATOMO_SITE_ID", value=""),
+    (key = "MATOMO_DO_NOT_TRACK", value="true"),
+    (key = "MATOMO_WITH_USERNAME", value="false"),
+    (key = "BROWSER_POLICY_ENABLED", value="true"),
+    (key = "TRUSTED_URL", value=""),
+    (key = "WEBHOOKS_ATTRIBUTES", value=""),
+    (key = "OAUTH2_ENABLED", value=""),
+    (key = "OAUTH2_CLIENT_ID", value="false"),
+    (key = "OAUTH2_SECRET", value=""),
+    (key = "OAUTH2_SERVER_URL", value=""),
+    (key = "OAUTH2_AUTH_ENDPOINT", value=""),
+    (key = "OAUTH2_USERINFO_ENDPOINT", value=""),
+    (key = "OAUTH2_TOKEN_ENDPOINT", value=""),
+    (key = "LDAP_ENABLE", value="false"),
     (key = "SANDSTORM", value = "1"),
     (key = "METEOR_SETTINGS", value = "{\"public\": {\"sandstorm\": true}}")
   ]

@@ -1,8 +1,14 @@
 ## Issue
 
+Add these issues to elsewhere:
+- Snap: https://github.com/wekan/wekan-snap/issues
+
+Other Wekan issues can be added here.
+
 **Server Setup Information**:
 
 * Did you test in newest Wekan?:
+* For new Wekan install, did you configure root-url correctly https://github.com/wekan/wekan/wiki/Settings ?
 * Wekan version:
 * If this is about old version of Wekan, what upgrade problem you have?:
 * Operating System:
@@ -13,6 +19,9 @@
 * ROOT_URL environment variable http(s)://(subdomain).example.com(/suburl):
 
 **Problem description**:
-- *REQUIRED: Add recorded animated gif about how it works currently, and screenshot mockups how it should work*
+- *REQUIRED: Add recorded animated gif about how it works currently, and screenshot mockups how it should work. Use peek to record animgif in Linux https://github.com/phw/peek*
 - *Explain steps how to reproduce*
-- *Attach log files in .zip file)*
+- *In webbrowser, what does show Right Click / Inspect / Console ? Chrome shows more detailed info than Firefox.*
+- *If using Snap, what does show command `sudo snap logs wekan.wekan` ?*
+- *If using Docker, what does show command `sudo docker logs wekan-app` ?*
+- *If logs are very long, attach them in .zip file*

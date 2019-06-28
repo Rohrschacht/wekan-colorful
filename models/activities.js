@@ -14,6 +14,9 @@ Activities.helpers({
   board() {
     return Boards.findOne(this.boardId);
   },
+  oldBoard() {
+    return Boards.findOne(this.oldBoardId);
+  },
   user() {
     return Users.findOne(this.userId);
   },
@@ -25,6 +28,9 @@ Activities.helpers({
   },
   swimlane() {
     return Swimlanes.findOne(this.swimlaneId);
+  },
+  oldSwimlane() {
+    return Swimlanes.findOne(this.oldSwimlaneId);
   },
   oldList() {
     return Lists.findOne(this.oldListId);
@@ -44,13 +50,26 @@ Activities.helpers({
   checklistItem() {
     return ChecklistItems.findOne(this.checklistItemId);
   },
+  subtasks() {
+    return Cards.findOne(this.subtaskId);
+  },
   customField() {
     return CustomFields.findOne(this.customFieldId);
   },
+  // Label activity did not work yet, unable to edit labels when tried this.
+  //label() {
+  //  return Cards.findOne(this.labelId);
+  //},
 });
 
 Activities.before.insert((userId, doc) => {
   doc.createdAt = new Date();
+});
+
+Activities.after.insert((userId, doc) => {
+  const activity = Activities._transform(doc);
+  RulesHelper.executeRules(activity);
+
 });
 
 if (Meteor.isServer) {
@@ -64,6 +83,9 @@ if (Meteor.isServer) {
     Activities._collection._ensureIndex({ commentId: 1 }, { partialFilterExpression: { commentId: { $exists: true } } });
     Activities._collection._ensureIndex({ attachmentId: 1 }, { partialFilterExpression: { attachmentId: { $exists: true } } });
     Activities._collection._ensureIndex({ customFieldId: 1 }, { partialFilterExpression: { customFieldId: { $exists: true } } });
+    // Label activity did not work yet, unable to edit labels when tried this.
+    //Activities._collection._dropIndex({ labelId: 1 }, { "indexKey": -1 });
+    //Activities._collection._dropIndex({ labelId: 1 }, { partialFilterExpression: { labelId: { $exists: true } } });
   });
 
   Activities.after.insert((userId, doc) => {
@@ -89,6 +111,14 @@ if (Meteor.isServer) {
       params.url = board.absoluteUrl();
       params.boardId = activity.boardId;
     }
+    if (activity.oldBoardId) {
+      const oldBoard = activity.oldBoard();
+      if (oldBoard) {
+        watchers = _.union(watchers, oldBoard.watchers || []);
+        params.oldBoard = oldBoard.title;
+        params.oldBoardId = activity.oldBoardId;
+      }
+    }
     if (activity.memberId) {
       participants = _.union(participants, [activity.memberId]);
       params.member = activity.member().getName();
@@ -101,9 +131,19 @@ if (Meteor.isServer) {
     }
     if (activity.oldListId) {
       const oldList = activity.oldList();
-      watchers = _.union(watchers, oldList.watchers || []);
-      params.oldList = oldList.title;
-      params.oldListId = activity.oldListId;
+      if (oldList) {
+        watchers = _.union(watchers, oldList.watchers || []);
+        params.oldList = oldList.title;
+        params.oldListId = activity.oldListId;
+      }
+    }
+    if (activity.oldSwimlaneId) {
+      const oldSwimlane = activity.oldSwimlane();
+      if (oldSwimlane) {
+        watchers = _.union(watchers, oldSwimlane.watchers || []);
+        params.oldSwimlane = oldSwimlane.title;
+        params.oldSwimlaneId = activity.oldSwimlaneId;
+      }
     }
     if (activity.cardId) {
       const card = activity.card();
@@ -114,6 +154,11 @@ if (Meteor.isServer) {
       params.url = card.absoluteUrl();
       params.cardId = activity.cardId;
     }
+    if (activity.swimlaneId) {
+      const swimlane = activity.swimlane();
+      params.swimlane = swimlane.title;
+      params.swimlaneId = activity.swimlaneId;
+    }
     if (activity.commentId) {
       const comment = activity.comment();
       params.comment = comment.text;
@@ -121,7 +166,8 @@ if (Meteor.isServer) {
     }
     if (activity.attachmentId) {
       const attachment = activity.attachment();
-      params.attachment = attachment._id;
+      params.attachment = attachment.original.name;
+      params.attachmentId = attachment._id;
     }
     if (activity.checklistId) {
       const checklist = activity.checklist();
@@ -134,25 +180,21 @@ if (Meteor.isServer) {
     if (activity.customFieldId) {
       const customField = activity.customField();
       params.customField = customField.name;
+      params.customFieldValue = customField.text;
     }
+    // Label activity did not work yet, unable to edit labels when tried this.
+    //if (activity.labelId) {
+    //  const label = activity.label();
+    //  params.label = label.name;
+    //  params.labelId = activity.labelId;
+    //}
     if (board) {
       const watchingUsers = _.pluck(_.where(board.watchers, {level: 'watching'}), 'userId');
       const trackingUsers = _.pluck(_.where(board.watchers, {level: 'tracking'}), 'userId');
-      const mutedUsers = _.pluck(_.where(board.watchers, {level: 'muted'}), 'userId');
-      switch(board.getWatchDefault()) {
-      case 'muted':
-        participants = _.intersection(participants, trackingUsers);
-        watchers = _.intersection(watchers, trackingUsers);
-        break;
-      case 'tracking':
-        participants = _.difference(participants, mutedUsers);
-        watchers = _.difference(watchers, mutedUsers);
-        break;
-      }
-      watchers = _.union(watchers, watchingUsers || []);
+      watchers = _.union(watchers, watchingUsers, _.intersection(participants, trackingUsers));
     }
 
-    Notifications.getUsers(participants, watchers).forEach((user) => {
+    Notifications.getUsers(watchers).forEach((user) => {
       Notifications.notify(user, title, description, params);
     });
 

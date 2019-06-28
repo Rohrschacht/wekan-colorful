@@ -7,7 +7,8 @@ template(name="board")
         +boardBody
     else
       //- XXX We need a better error message in case the board has been archived
-      +message(label="board-not-found")
+      //+message(label="board-not-found")
+      {{goHome}}
   else
     +spinner
 
@@ -20,8 +21,22 @@ template(name="boardBody")
       class="{{#if draggingActive.get}}is-dragging-active{{/if}}")
       if showOverlay.get
         .board-overlay
-      if isViewSwimlanes
+      if currentBoard.isTemplatesBoard
         each currentBoard.swimlanes
           +swimlane(this)
-      if isViewLists
-        +listsGroup
+      else if isViewSwimlanes
+        each currentBoard.swimlanes
+          +swimlane(this)
+      else if isViewLists
+        +listsGroup(currentBoard)
+      else if isViewCalendar
+        +calendarView
+      else
+        +listsGroup(currentBoard)
+
+template(name="calendarView")
+  if isViewCalendar
+    .calendar-view.swimlane
+      if currentCard
+        +cardDetails(currentCard)
+      +fullcalendar(calendarOptions)

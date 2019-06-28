@@ -1,10 +1,10 @@
 @import 'nib'
 
+select,
 textarea,
 input:not([type=file]),
 button
   box-sizing: border-box
-  -webkit-appearance: none
   background-color: #ebebeb
   border: 1px solid #ccc
   border-radius: 3px
@@ -225,9 +225,12 @@ textarea
 
 .edit-controls,
 .add-controls
+  display: flex
+  align-items: baseline
   margin-top: 0
 
   button[type=submit]
+  input[type=button]
     float: left
     height: 32px
     margin-top: -2px

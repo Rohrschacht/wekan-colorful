@@ -27,6 +27,10 @@ Attachments = new FS.Collection('attachments', {
 
 
 if (Meteor.isServer) {
+  Meteor.startup(() => {
+    Attachments.files._ensureIndex({ cardId: 1 });
+  });
+
   Attachments.allow({
     insert(userId, doc) {
       return allowIsBoardMember(userId, Boards.findOne(doc.boardId));
@@ -68,6 +72,8 @@ if (Meteor.isServer) {
         attachmentId: doc._id,
         boardId: doc.boardId,
         cardId: doc.cardId,
+        listId: doc.listId,
+        swimlaneId: doc.swimlaneId,
       });
     } else {
       // Don't add activity about adding the attachment as the activity
@@ -80,6 +86,19 @@ if (Meteor.isServer) {
         },
       });
     }
+  });
+
+  Attachments.files.before.remove((userId, doc) => {
+    Activities.insert({
+      userId,
+      type: 'card',
+      activityType: 'deleteAttachment',
+      attachmentId: doc._id,
+      boardId: doc.boardId,
+      cardId: doc.cardId,
+      listId: doc.listId,
+      swimlaneId: doc.swimlaneId,
+    });
   });
 
   Attachments.files.after.remove((userId, doc) => {
