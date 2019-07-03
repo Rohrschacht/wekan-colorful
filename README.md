@@ -2,14 +2,17 @@
 
 ## Fork of [wekan/wekan](https://github.com/wekan/wekan)
 
+**I will make an effort to test that the project is building and running successfully in docker before merging and commiting to the stable branch. I will also make the stable branch the default branch of this fork. This way, whenever cloning or downloading from github, one will obtain a working version of the colorful wekan fork :]**
+
 This fork of the original [wekan](https://github.com/wekan/wekan) was created to implement a version of the awesome software
 that sets the background color of the entire board, rather than just the top bar, when setting the color of the board.
 
 The changes include:
-* make list and swimlane change background color in function setBoardColor in boardColors.styl
+* make list, swimlane and board-canvas change background color in function setBoardColor in boardColors.styl
 * make list-header change background and border color in function setBoardColor in boardColors.styl
 * make the list-header-name white for readability purposes
 * make open-list-composer and open-minicard-composer white for readability purposes
+* make controls under new card white for readability
 * change docker-compose.yml to build from current directory, rather than using an image
 
 [![Contributors](https://img.shields.io/github/contributors/wekan/wekan.svg "Contributors")](https://github.com/wekan/wekan/graphs/contributors)
