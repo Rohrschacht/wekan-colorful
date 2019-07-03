@@ -1,3 +1,11 @@
+# v2.98 2019-07-02 Wekan release
+
+This release adds the following new features, thanks to xet7:
+
+- [Add Wekan v2.95-v2.97 master branch features and fixes to meteor-1.8 branch](https://github.com/wekan/wekan/commit/34b2168d0dda253dedabbee47031873efa4ae446).
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v2.97 2019-07-01 Wekan release
 
 This release [adds the following new features](https://github.com/wekan/wekan/commit/3e8cb8c6e1617ef03ebce045d3b93aeb2cf91228), thanks to xet7:
@@ -7,7 +15,7 @@ This release [adds the following new features](https://github.com/wekan/wekan/co
 - Add new background colors with themes: dark, relax.
 
 Note: Due Date etc on cards is visible on all background colors and themes. Hiding is not implemented yet.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.96 2019-07-01 Wekan release
@@ -26,7 +34,7 @@ Thanks to above GitHub users for their contributions and translators for their t
 
 This release adds the following new features, thanks to xet7:
 
-- [Make list header add card + button more black, to make it more visible](https://github.com/wekan/wekan/commit/b260d05a8b2f87c29dd998d42103d1220b20cc08). 
+- [Make list header add card + button more black, to make it more visible](https://github.com/wekan/wekan/commit/b260d05a8b2f87c29dd998d42103d1220b20cc08).
 - [On minicard, make comment icon and number of comments have red color
   on white rounded background, so it is more visible when there is comments on card](https://github.com/wekan/wekan/commit/bbc68309af0029f2bc4194db4c7e79689f888ea4).
 - [Make card description text more visible with black borders and more white text area](https://github.com/wekan/wekan/commit/48ebc5f11745b125ce01d08d60e2d8e3a9419a5f).
@@ -39,15 +47,14 @@ and adds the following [themes to board background colors](https://github.com/we
 
 Thanks to above GitHub users for their contributions and translators for their translations.
 
-# v2.94 2019-06-30 Wekan RasPi3 Meteor 1.8.1 release
+# v2.94 2019-06-29 Wekan release
 
-This release adds the following new features, thanks to xet7:
+This release adds the following updates:
 
-- [Wekan now availabe for RasPi3, arm64 servers etc](https://github.com/wekan/wekan/wiki/Raspberry-Pi).
-  See [meteor-1.8 branch ChangeLog](https://github.com/wekan/wekan/blob/meteor-1.8/CHANGELOG.md) for changes.
-  For Docker, see docker-compose.yml at https://github.com/wekan/wekan meteor-1.8 branch.
+- [Prettier & eslint project style update](https://github.com/wekan/wekan/pull/2520).
+  Thanks to justinr1234.
 
-Currently Snap and Sandstorm are at Meteor 1.6 still, in this master branch. Sometime later all platforms move to meteor-1.8 brach when builds work.
+Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.93 2019-06-28 Wekan release
 
@@ -170,7 +177,7 @@ This release fixes the following bugs:
 
 - [Fix OIDC Docker login. Empty string results to empty array at wekan/server/authentication.js](https://github.com/wekan/wekan/commit/bddbaa7bc2f3cfe8553a2265e168231ab51876f3).
   Thanks to xet7.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.81 2019-06-13 Wekan release
@@ -433,7 +440,7 @@ and adds the following updates:
   because [it was found old version was in use](https://github.com/wekan/wekan/issues/2334).
   Thanks to shaygover and xet7.
 - [Upgrade to Node 8.16.0](https://github.com/wekan/wekan/commit/6117097a93bfb11c8bd4c87a23c44a50e22ceb87).
-  Thanks to Node developers and xet7.    
+  Thanks to Node developers and xet7.
 - [Upgrade Docker base image to ubuntu:disco](https://github.com/wekan/wekan/commit/bd14ee3b1f450ddc6dec26ccc8da702b839942e5).
   Thanks to Ubuntu developers and xet7.
 

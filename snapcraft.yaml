@@ -1,5 +1,4 @@
 name: wekan
-version: 0
 version-script: git describe --dirty --tags |  cut -c 2-
 summary: The open-source kanban
 description: |
@@ -65,9 +64,9 @@ apps:
 
 parts:
     mongodb:
-        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.22.tgz
+        source: https://repo.mongodb.org/apt/ubuntu/dists/xenial/mongodb-org/4.0/multiverse/binary-amd64/mongodb-org-server_4.0.10_amd64.deb
         plugin: dump
-        stage-packages: [libssl1.0.0]
+        stage-packages: [libssl1.1]
         filesets:
             mongo:
                 - usr
@@ -85,18 +84,18 @@ parts:
         node-packages:
             - node-gyp
             - node-pre-gyp
-            - fibers@2.0.0
+            - fibers@4.0.1
         build-packages:
             - ca-certificates
             - apt-utils
-            - python
             - python3
-            - g++
+            - gcc-8
             - capnproto
             - curl
             - execstack
             - nodejs
             - npm
+            - python3-pip
         stage-packages:
             - libfontconfig1
         override-build: |
@@ -106,6 +105,7 @@ parts:
             rm -rf .build
             mkdir -p .build/python
             cd .build/python
+            pip3 install -U setuptools wheel
             git clone --depth 1 -b master https://github.com/Kronuz/esprima-python
             cd esprima-python
             python3 setup.py install
@@ -113,11 +113,11 @@ parts:
             mkdir -p ./public/api
             python3 ./openapi/generate_openapi.py --release $(git describe --tags --abbrev=0) > ./public/api/wekan.yml
             # we temporary need api2html and mkdirp
-            npm install -g api2html@0.3.0
-            npm install -g mkdirp
+            npm install -g --unsafe-perm api2html@0.3.0
+            npm install -g  --unsafe-perm mkdirp
             api2html -c ./public/logo-header.png -o ./public/api/wekan.html ./public/api/wekan.yml
-            npm uninstall -g mkdirp
-            npm uninstall -g api2html
+            npm uninstall -g --unsafe-perm mkdirp
+            npm uninstall -g --unsafe-perm api2html
             # Node Fibers 100% CPU usage issue:
             # https://github.com/wekan/wekan-mongodb/issues/2#issuecomment-381453161
             # https://github.com/meteor/meteor/issues/9796#issuecomment-381676326
@@ -192,7 +192,7 @@ parts:
             #fi
             rm -rf package-lock.json .build
             meteor add standard-minifier-js --allow-superuser
-            meteor npm install --allow-superuser
+            meteor npm install --allow-superuser --unsafe-perm
             meteor build .build --directory --allow-superuser
             cp -f fix-download-unicode/cfs_access-point.txt .build/bundle/programs/server/packages/cfs_access-point.js
             #Removed binary version of bcrypt because of security vulnerability that is not fixed yet.
@@ -205,14 +205,14 @@ parts:
             #cd ../../../../
             # Change to directory .build/bundle/programs/server
             cd .build/bundle/programs/server
-            npm install
+            npm install --unsafe-perm
             #meteor npm install --save bcrypt
             # Change back to Wekan source directory
             cd ../../../..
             cp -r .build/bundle/* $SNAPCRAFT_PART_INSTALL/
             cp .build/bundle/.node_version.txt $SNAPCRAFT_PART_INSTALL/
             rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/wekan
-            rm $SNAPCRAFT_PART_INSTALL/programs/server/npm/node_modules/meteor/rajit_bootstrap3-datepicker/lib/bootstrap-datepicker/node_modules/phantomjs-prebuilt/lib/phantom/bin/phantomjs
+            #rm $SNAPCRAFT_PART_INSTALL/programs/server/npm/node_modules/meteor/rajit_bootstrap3-datepicker/lib/bootstrap-datepicker/node_modules/phantomjs-prebuilt/lib/phantom/bin/phantomjs
             rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/node-pre-gyp/node_modules/tar/lib/.mkdir.js.swp
             rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/node-gyp/node_modules/tar/lib/.mkdir.js.swp
         organize:
