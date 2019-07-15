@@ -4,14 +4,24 @@ This release adds the following new features:
 
 - [Add Corteza theme. In progress](https://github.com/wekan/wekan/commit/289e78dbd29cca9d97d3b5787c3368583d43b40f).
   Thanks to xet7.
-- [Notify Due Days: System timelines will be showing any user modification for duat startat endat receivedat, also notification
-  to the watchers and if any card is due, about due or past due](https://github.com/wekan/wekan/pull/2536).
+- [Notify Due Days: System timelines will be showing any user modification for duat startat endat receivedat,
+  also notification to the watchers and if any card is due, about due or past due](https://github.com/wekan/wekan/pull/2536).
   ENV variables: NOTIFY_DUE_DAYS_BEFORE_AND_AFTER (default is 2, if 0, will turn off notification for and dued cards),
   NOTIFY_DUE_AT_HOUR_OF_DAY (any number between 0 - 23, standing for at what hour of a day that the notification will
-  be sent to the watchers).
+  be sent to the watchers). Also [bug fix for this, timeOldValue needs to set to "" in params when it's
+  not set](https://github.com/wekan/wekan/pull/2541).
   Thanks to whowillcare.
 - [Notify Due Days: Add settings to Snap/Docker/Source. Rename env variables to NOTIFY_DUE_DAYS_BEFORE_AND_AFTER and
   NOTIFY_DUE_AT_HOUR_OF_DAY](https://github.com/wekan/wekan/commit/5084cddf37ba16ce0855f8575c39f5e62d1b7f67).
+  Thanks to xet7.
+- [BIGEVENTS_PATTERN: When user being @ in comment, as long as it's not himself, a notification will be
+  sent out no matter this user is watching the board or not](https://github.com/wekan/wekan/pull/2541).
+  Introduced a system env var BIGEVENTS_PATTERN default as "due", so any activityType matches the pattern,
+  system will send out notifications to all board members no matter they are watching or tracking
+  the board or not. Owner of the Wekan server can disable the feature by setting this variable to "NONE"
+  or change the pattern to any valid regex. i.e. '|' delimited activityType names.
+  Thanks to whowillcare.
+- [Add BIGEVENTS_PATTERN to Source/Snap/Docker](https://github.com/wekan/wekan/commit/d7c09df7d2649bf2d2b61772c251f81793a6ed77).
   Thanks to xet7.
 
 and adds the following updates:
@@ -23,9 +33,10 @@ and adds the following updates:
 
 and fixes the following bugs:
 
-- [Remove from minicard](https://github.com/wekan/wekan/commit/1ea6552cd1ebbd4f52eb903abfa34595664637d7)
-  comment icon and number of comments [the aggressive red color and big bold serif font style
-  number](https://github.com/wekan/wekan/commit/bbc68309af0029f2bc4194db4c7e79689f888ea4#commitcomment-34216371).
+- RELAX THEME: Use [only in this theme](https://github.com/wekan/wekan/commit/3ad6e554dceea822dee7390872260e872a792dcd)
+  the aggressive [red color and big bold serif font style
+  number](https://github.com/wekan/wekan/commit/bbc68309af0029f2bc4194db4c7e79689f888ea4#commitcomment-34216371) and
+  [card details text emphasis](https://github.com/wekan/wekan/commit/48ebc5f11745b125ce01d08d60e2d8e3a9419a5f#commitcomment-34268095)
   Thanks to hever and xet7.
 - [Try to fix docker-compose.yml to use correct master branch that has
   meteor 1.8.1](https://github.com/wekan/wekan/commit/202cc5a797b6269ec422c6f2e532a49f09d4e30a).
@@ -34,6 +45,15 @@ and fixes the following bugs:
   visible](https://github.com/wekan/wekan/commit/2003d90467debeadf51b69630c80ee6040524f52).
   Still missing: custom field value, list name, swimlane name.
   Thanks to xet7.
+- [Don't remove boardoverlay when mouse leaves carddetails](https://github.com/wekan/wekan/pull/2540).
+  This reduces Wekan board flashiness.
+  Thanks to newhinton.
+- [Limit the board list to 2 or 1 for mobile clients](https://github.com/wekan/wekan/pull/2542).
+  As a mobile user, the board size of in the home page too small, so the user is easily to
+  click on archive or copy button by accident. Increase the board size to 50% for pixel
+  greater than 360 and lesser than 800 and height to 8rem, 100% for any screen is even smaller.
+  This will reduce the accident much more.
+  Thanks to whowillcare.
 
 Thanks to above GitHub users for their contributions and translators for their translations.
 
