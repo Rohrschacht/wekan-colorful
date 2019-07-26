@@ -21,6 +21,15 @@ SET PORT=2000
 REM # If you disable Wekan API with false, Export Board does not work.
 SET WITH_API=true
 
+REM # ==== RICH TEXT EDITOR IN CARD COMMENTS ====
+REM # https://github.com/wekan/wekan/pull/2560
+SET RICHER_CARD_COMMENT_EDITOR=true
+
+REM # ==== Allow to shrink attached/pasted image ====
+REM # https://github.com/wekan/wekan/pull/2544
+REM SET MAX_IMAGE_PIXEL=1024
+REM SET IMAGE_COMPRESS_RATIO=80
+
 REM # ==== PASSWORD BRUTE FORCE PROTECTION ====
 REM #https://atmospherejs.com/lucasantoniassi/accounts-lockout
 REM #Defaults below. Uncomment to change. wekan/server/accounts-lockout.js
@@ -207,8 +216,10 @@ REM # example : LDAP_BACKGROUND_SYNC=true
 REM SET LDAP_BACKGROUND_SYNC=false
 
 REM # LDAP_BACKGROUND_SYNC_INTERVAL : At which interval does the background task sync in milliseconds
-REM # example : LDAP_BACKGROUND_SYNC_INTERVAL=12345
-REM SET LDAP_BACKGROUND_SYNC_INTERVAL=100
+REM # At which interval does the background task sync in milliseconds.
+REM # Leave this unset, so it uses default, and does not crash.
+REM # https://github.com/wekan/wekan/issues/2354#issuecomment-515305722
+SET LDAP_BACKGROUND_SYNC_INTERVAL=''
 
 REM # LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED :
 REM # example : LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED=true

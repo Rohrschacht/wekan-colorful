@@ -1,4 +1,73 @@
-# Upcoming Wekan release
+# v3.02 Upcoming Wekan release
+
+This release adds the following updates:
+
+- [Updated Wekan on OpenShift](https://github.com/wekan/wekan/commit/85ca2b1363ed0bad8639ba7ed65c55e445816947).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Set LDAP_BACKGROUND_SYNC_INTERVAL='' (empty string) so it works](https://github.com/wekan/wekan/commit/fff144a8279ac36ce83e6b975f17f6dbc35f39d6)
+  and [does not crash](https://github.com/wekan/wekan/issues/2354#issuecomment-515305722).
+  Also updated wekan-postgresql docker-compose.yml to use devel branch docker image, because ToroDB requires MongoDB 3.2,
+  it's not tested yet could newest master branch docker image work with MongoDB 3.2.  
+  Thanks to benh57 and xet7.
+
+and tries to fix following bugs:
+
+- [Try to fix Snap](https://github.com/wekan/wekan/commit/7cf6850cdf77ef51808784e3d275c5be86ff6c92).
+  This [will be tested soon, does this work](https://github.com/wekan/wekan/issues/2533#issuecomment-515329490).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.01 2019-07-26 Wekan release
+
+This release adds the following new features:
+
+- [Rich text editor at card comments, based on
+  Summernote](https://github.com/wekan/wekan/pull/2560).
+  Thanks to whowillcare.
+- [Add setting RICHER_CARD_COMMENT_EDITOR=true to
+  Source/Snap/Docker/Sandstorm](https://github.com/wekan/wekan/commit/4aba290358455433c0fc676e8c9cf1bd627eddde).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.00 2019-07-25 Wekan release
+
+This release:
+
+- works with source, and docker-compose.yml at master branch.
+- Docker release uses Meteor 1.8.1 and MongoDB 4.0.10, so you need to backup your old MongoDB database and
+  restore with --noIndexRestore as described at https://github.com/wekan/wekan/wiki/Backup
+- Snap and Sandstorm builds are not fixed yet, see progress at https://github.com/wekan/wekan/issues/2533
+
+This release adds the following new features:
+
+- [Added label text to labels on minicard](https://github.com/wekan/wekan/commit/c48d5a73cab04db1a1e113e4367dc88573110438).
+  Thanks to xet7.
+- [Allow to shrink attached/pasted image](https://github.com/wekan/wekan/pull/2544).
+  Thanks to whowillcare.
+
+and fixes the following bugs:
+
+- [Fix invites](https://github.com/wekan/wekan/pull/2549).
+  Thanks to justinr1234.
+- [Makes LDAP background sync work. If the sync interval is unspecified, falls back to a hourly default](https://github.com/wekan/wekan/pull/2555).
+  Thanks to pshunter.
+- [Prevent isCommentOnly user adding attachments, editing list names, moving lists,
+  and seeing board settings menu. Show non-editable Custom Fields to isCommentOnly user](https://github.com/wekan/wekan/commit/a68c928896a94c377134f29a7183aa0b5a423720).
+  Thanks to xet7.
+- [Many](https://github.com/wekan/wekan/pull/2546) [Snap](https://github.com/wekan/wekan/pull/2552) [fixes](https://github.com/wekan/wekan/pull/2553).
+  In Progress. Thanks to justrinr1234.
+- [Fixed Dockerfile](https://github.com/wekan/wekan/commit/7df6f305c5cf41ac213623aeffaa7e48c981e0b6) and
+  [docker-compose.yml](https://github.com/wekan/wekan/commit/95698911f92ca728dbaab69406fd09bcbf81339d).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v2.99 2019-07-17 Wekan release
 
 This release adds the following new features:
 
@@ -54,6 +123,13 @@ and fixes the following bugs:
   greater than 360 and lesser than 800 and height to 8rem, 100% for any screen is even smaller.
   This will reduce the accident much more.
   Thanks to whowillcare.
+- [Add check for board member isActive](https://github.com/wekan/wekan/commit fe42eb1d014c06dfed8114a00b29eac9b08baec6).
+  Thanks to xet7.
+
+and has the following features in progress, not anything visible yet:
+
+- [Teams/Organizations: Add beginnings of database structure](https://github.com/wekan/wekan/issues/802#issuecomment-505986270).
+  Thanks to xet7.
 
 Thanks to above GitHub users for their contributions and translators for their translations.
 

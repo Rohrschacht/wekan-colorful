@@ -37,6 +37,15 @@
       #export ACCOUNTS_LOCKOUT_UNKNOWN_USERS_LOCKOUT_PERIOD=60
       #export ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURE_WINDOW=15
       #---------------------------------------------------------------
+      # ==== RICH TEXT EDITOR IN CARD COMMENTS ====
+      # https://github.com/wekan/wekan/pull/2560
+      export RICHER_CARD_COMMENT_EDITOR=true
+      #---------------------------------------------------------------
+      # ==== Allow to shrink attached/pasted image ====
+      # https://github.com/wekan/wekan/pull/2544
+      #export MAX_IMAGE_PIXEL=1024
+      #export IMAGE_COMPRESS_RATIO=80
+      #---------------------------------------------------------------
       # ==== BIGEVENTS DUE ETC NOTIFICATIONS =====
       # https://github.com/wekan/wekan/pull/2541
       # Introduced a system env var BIGEVENTS_PATTERN default as "due",
@@ -217,8 +226,10 @@
       # example :  export LDAP_BACKGROUND_SYNC=true
       #export LDAP_BACKGROUND_SYNC=false
       # LDAP_BACKGROUND_SYNC_INTERVAL : At which interval does the background task sync in milliseconds
-      # example :  export LDAP_BACKGROUND_SYNC_INTERVAL=12345
-      #export LDAP_BACKGROUND_SYNC_INTERVAL=100
+      # At which interval does the background task sync in milliseconds.
+      # Leave this unset, so it uses default, and does not crash.
+      # https://github.com/wekan/wekan/issues/2354#issuecomment-515305722
+      export LDAP_BACKGROUND_SYNC_INTERVAL=''
       # LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED :
       # example :  export LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED=true
       #export LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED=false
