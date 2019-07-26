@@ -69,7 +69,6 @@ Activities.before.insert((userId, doc) => {
 Activities.after.insert((userId, doc) => {
   const activity = Activities._transform(doc);
   RulesHelper.executeRules(activity);
-
 });
 
 if (Meteor.isServer) {
@@ -78,11 +77,21 @@ if (Meteor.isServer) {
   // are largely used in the App. See #524.
   Meteor.startup(() => {
     Activities._collection._ensureIndex({ createdAt: -1 });
+    Activities._collection._ensureIndex({ modifiedAt: -1 });
     Activities._collection._ensureIndex({ cardId: 1, createdAt: -1 });
     Activities._collection._ensureIndex({ boardId: 1, createdAt: -1 });
-    Activities._collection._ensureIndex({ commentId: 1 }, { partialFilterExpression: { commentId: { $exists: true } } });
-    Activities._collection._ensureIndex({ attachmentId: 1 }, { partialFilterExpression: { attachmentId: { $exists: true } } });
-    Activities._collection._ensureIndex({ customFieldId: 1 }, { partialFilterExpression: { customFieldId: { $exists: true } } });
+    Activities._collection._ensureIndex(
+      { commentId: 1 },
+      { partialFilterExpression: { commentId: { $exists: true } } },
+    );
+    Activities._collection._ensureIndex(
+      { attachmentId: 1 },
+      { partialFilterExpression: { attachmentId: { $exists: true } } },
+    );
+    Activities._collection._ensureIndex(
+      { customFieldId: 1 },
+      { partialFilterExpression: { customFieldId: { $exists: true } } },
+    );
     // Label activity did not work yet, unable to edit labels when tried this.
     //Activities._collection._dropIndex({ labelId: 1 }, { "indexKey": -1 });
     //Activities._collection._dropIndex({ labelId: 1 }, { partialFilterExpression: { labelId: { $exists: true } } });
@@ -162,6 +171,26 @@ if (Meteor.isServer) {
     if (activity.commentId) {
       const comment = activity.comment();
       params.comment = comment.text;
+      if (board) {
+        const atUser = /(?:^|\s+)@(\S+)(?:\s+|$)/g;
+        const comment = params.comment;
+        if (comment.match(atUser)) {
+          const commenter = params.user;
+          while (atUser.exec(comment)) {
+            const username = RegExp.$1;
+            if (commenter === username) {
+              // it's person at himself, ignore it?
+              continue;
+            }
+            const user = Users.findOne(username) || Users.findOne({ username });
+            const uid = user && user._id;
+            if (board.hasMember(uid)) {
+              title = 'act-atUserComment';
+              watchers = _.union(watchers, [uid]);
+            }
+          }
+        }
+      }
       params.commentId = comment._id;
     }
     if (activity.attachmentId) {
@@ -180,7 +209,9 @@ if (Meteor.isServer) {
     if (activity.customFieldId) {
       const customField = activity.customField();
       params.customField = customField.name;
-      params.customFieldValue = customField.text;
+      params.customFieldValue = Activities.findOne({
+        customFieldId: customField._id,
+      }).value;
     }
     // Label activity did not work yet, unable to edit labels when tried this.
     //if (activity.labelId) {
@@ -188,19 +219,60 @@ if (Meteor.isServer) {
     //  params.label = label.name;
     //  params.labelId = activity.labelId;
     //}
-    if (board) {
-      const watchingUsers = _.pluck(_.where(board.watchers, {level: 'watching'}), 'userId');
-      const trackingUsers = _.pluck(_.where(board.watchers, {level: 'tracking'}), 'userId');
-      watchers = _.union(watchers, watchingUsers, _.intersection(participants, trackingUsers));
+    if (
+      (!activity.timeKey || activity.timeKey === 'dueAt') &&
+      activity.timeValue
+    ) {
+      // due time reminder
+      title = 'act-withDue';
     }
+    ['timeValue', 'timeOldValue'].forEach(key => {
+      // copy time related keys & values to params
+      const value = activity[key];
+      if (value) params[key] = value;
+    });
+    if (board) {
+      const BIGEVENTS = process.env.BIGEVENTS_PATTERN || 'due'; // if environment BIGEVENTS_PATTERN is set or default, any activityType matching it is important
+      try {
+        const atype = activity.activityType;
+        if (new RegExp(BIGEVENTS).exec(atype)) {
+          watchers = _.union(
+            watchers,
+            board.activeMembers().map(member => member.userId),
+          ); // notify all active members for important events system defined or default to all activity related to due date
+        }
+      } catch (e) {
+        // passed env var BIGEVENTS_PATTERN is not a valid regex
+      }
 
-    Notifications.getUsers(watchers).forEach((user) => {
+      const watchingUsers = _.pluck(
+        _.where(board.watchers, { level: 'watching' }),
+        'userId',
+      );
+      const trackingUsers = _.pluck(
+        _.where(board.watchers, { level: 'tracking' }),
+        'userId',
+      );
+      watchers = _.union(
+        watchers,
+        watchingUsers,
+        _.intersection(participants, trackingUsers),
+      );
+    }
+    Notifications.getUsers(watchers).forEach(user => {
       Notifications.notify(user, title, description, params);
     });
 
-    const integrations = Integrations.find({ boardId: board._id, type: 'outgoing-webhooks', enabled: true, activities: { '$in': [description, 'all'] } }).fetch();
+    const integrations = Integrations.find({
+      boardId: board._id,
+      type: 'outgoing-webhooks',
+      enabled: true,
+      activities: { $in: [description, 'all'] },
+    }).fetch();
     if (integrations.length > 0) {
       Meteor.call('outgoingWebhooks', integrations, description, params);
     }
   });
 }
+
+export default Activities;

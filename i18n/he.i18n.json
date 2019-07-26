@@ -702,5 +702,22 @@
     "swimlane-delete-pop": "כל הפעולות יוסרו מהזנת הפעילות ולא תהיה לך אפשרות לשחזר את המסלול. אי אפשר לחזור אחורה.",
     "restore-all": "לשחזר הכול",
     "delete-all": "למחוק הכול",
-    "loading": "העמוד בטעינה, אנא המתינו."
+    "loading": "העמוד בטעינה, אנא המתינו.",
+    "previous_as": "הזמן הקודם היה",
+    "act-a-dueAt": "זמן יעד שונה ל: \n__timeValue__\nבכרטיס: __card__\n זמן היעד הקודם היה __timeOldValue__",
+    "act-a-endAt": "מועד הסיום השתנה לכדי __timeValue__ לעומת (__timeOldValue__)",
+    "act-a-startAt": "מועד ההתחלה השתנה לכדי __timeValue__ לעומת (__timeOldValue__)",
+    "act-a-receivedAt": "מועד הקבלה השתנה לכדי __timeValue__ לעומת (__timeOldValue__)",
+    "a-dueAt": "מועד היעד השתנה לכדי",
+    "a-endAt": "מועד הסיום השתנה לכדי",
+    "a-startAt": "מועד ההתחלה השתנה לכדי",
+    "a-receivedAt": "מועד הקבלה השתנה לכדי",
+    "almostdue": "מועד היעד הנוכחי %s מתקרב",
+    "pastdue": "מועד היעד הנוכחי %s חלף",
+    "duenow": "מועד היעד הנוכחי %s הוא היום",
+    "act-withDue": "__card__ תזכורות למועדי יעד [__board__]",
+    "act-almostdue": "הזכירה שמועד היעד הנוכחי (__timeValue__) של __card__ מתקרב",
+    "act-pastdue": "הזכירה שמועד היעד הנוכחי (__timeValue__) של __card__ חלף",
+    "act-duenow": "הזכירה שמועד היעד הנוכחי (__timeValue__) של __card__ הוא עכשיו",
+    "act-atUserComment": "אוזכרת תחת [__board__] ‏__card__"
 }

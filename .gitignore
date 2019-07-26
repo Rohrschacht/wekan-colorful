@@ -8,7 +8,6 @@ npm-debug.log
 .vscode/
 .idea/
 .build/*
-package-lock.json
 **/parts/
 **/stage
 **/prime
@@ -29,3 +28,4 @@ versions.json
 .Trashes
 Thumbs.db
 ehthumbs.db
+.eslintcache

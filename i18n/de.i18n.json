@@ -702,5 +702,22 @@
     "swimlane-delete-pop": "Alle Aktionen werden aus dem Aktivitätenfeed entfernt und die Swimlane kann nicht wiederhergestellt werden. Es gibt kein Rückgängig!",
     "restore-all": "Alles wiederherstellen",
     "delete-all": "Alles löschen",
-    "loading": "Laden, bitte warten."
+    "loading": "Laden, bitte warten.",
+    "previous_as": "letzter Zeitpunkt war",
+    "act-a-dueAt": "modifiziere Fälligkeitszeitpunkt auf\nWenn: __timeValue__\nWo: __card__\nvorheriger Fälligkeitszeitpunkt war __timeOldValue__",
+    "act-a-endAt": "modifiziere Endzeit auf __timeValue__ von (__timeOldValue__)",
+    "act-a-startAt": "modifiziere Startzeit auf __timeValue__ von (__timeOldValue__)",
+    "act-a-receivedAt": "modifiziere Empfangszeit auf __timeValue__ von (__timeOldValue__)",
+    "a-dueAt": "modifiziere Fälligkeitszeitpunkt auf",
+    "a-endAt": "modifiziere Endzeit auf",
+    "a-startAt": "modifiziere Startzeit auf",
+    "a-receivedAt": "modifiziere Empfangszeit auf",
+    "almostdue": "aktuelles Fälligkeitsdatum %s ist bevorstehend",
+    "pastdue": "aktuelles Fälligkeitsdatum %s ist vorbei",
+    "duenow": "aktuelles Fälligkeitsdatum %s ist heute",
+    "act-withDue": "__card__ fällige Erinnerungen [__board__]",
+    "act-almostdue": "erinnernd an das aktuelle Fälligkeitszeitpunkt (__timeValue__) von __card__ ist bevorstehend",
+    "act-pastdue": "erinnernd an das aktuelle Fälligkeitszeitpunkt (__timeValue__) von __card__ ist vorbei",
+    "act-duenow": "erinnernd an das aktuelle Fälligkeitszeitpunkt (__timeValue__) von __card__ ist jetzt",
+    "act-atUserComment": "Du wurdest erwähnt in [__board__] __card__"
 }

@@ -237,7 +237,9 @@ setBoardColor(color)
 .board-color-relax
   setBoardColor(#27AE61)
 
-  // RELAX MODE: light green backgroud, when green background color selected.
+  // RELAX MODE: light green background, with green background color,
+  // to help this theme users to relax.
+  // Colors and emphasis are specific to this Wekan theme contributor's company.
   .ui-sortable
     background-color:#a7e366
 
@@ -250,3 +252,64 @@ setBoardColor(color)
 
   .list
     border-left: 1px dotted #000000
+
+  // Card details text emphasis: black border and white background
+  // to make it details text field easier to find for RELAX MODE users,
+  // and focus attention.
+  .card-details .card-details-items
+    & ~ .js-open-inlined-form
+        .viewer
+            background-color #ffffff !important
+            padding 15px !important
+            border 1px solid #000000 !important
+
+  // When card has comment, emphasis on minicard:
+  // bigger red comment icon and number of comments,
+  // to make it easier notice card comments and focus attention.
+  .minicard .badges .badge
+    .badge-icon,
+    .badge-text
+      &.badge-comment
+        display: block
+        border-radius: 4px
+        padding: 1px 3px
+        margin-bottom: 0.3rem
+        color: #ff0000
+        background-color: #ffffff
+        font-weight: bold
+        font-size: 11pt
+
+.board-color-corteza
+  setBoardColor(#568BA2)
+
+  /*
+    Wekan for Corteza https://cortezaproject.org
+
+    Theme to match Corteza colors from:
+    https://github.com/cortezaproject/corteza-webapp-messaging/blob/master/src/assets/sass/variables.scss
+
+    // Paths
+    $fonts_dir : './assets/fonts/';
+    $icomoon-font-path: $fonts_dir + 'icomoon' !default;
+    $icomoon-font-family: "icomoon" !default;
+
+    // Typography
+    $regular: 'nunito_sansregular';
+    $bold: 'nunito_sansbold';
+    $semibold: 'nunito_sanssemibold';
+
+    // Color system
+    $white:         #fff !default;
+    $black:         #000 !default;
+    $primary:       #568ba2;
+    $secondary:     #90A3B1;
+    $success:       #719430;
+    $warning:       #F5D380;
+    $danger:        #E85568;
+    $light:         #F3F3F5;
+    $dark:          #1e2224;
+    $currentmymessagebgcolor : #a7d0e3;
+  */
+
+  //.header-quick-access
+  //  backgroud-color: #568ba2

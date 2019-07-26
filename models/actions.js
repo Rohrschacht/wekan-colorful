@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 Actions = new Mongo.Collection('actions');
 
 Actions.allow({
@@ -17,3 +19,11 @@ Actions.helpers({
     return this.desc;
   },
 });
+
+if (Meteor.isServer) {
+  Meteor.startup(() => {
+    Actions._collection._ensureIndex({ modifiedAt: -1 });
+  });
+}
+
+export default Actions;

@@ -702,5 +702,22 @@
     "swimlane-delete-pop": "Kaikki toimet poistetaan toimintasyötteestä ja swimlanen poistaminen on lopullista. Tätä ei pysty peruuttamaan.",
     "restore-all": "Palauta kaikki",
     "delete-all": "Poista kaikki",
-    "loading": "Ladataan, odota hetki."
+    "loading": "Ladataan, odota hetki.",
+    "previous_as": "viimeksi oli",
+    "act-a-dueAt": "muokattu eräätymisaikaa \nMilloin: __timeValue__\nMissä: __card__\n edellinen erääntymisaika oli __timeOldValue__",
+    "act-a-endAt": "muokattu loppumisajaksi __timeValue__ alkuperäisestä (__timeOldValue__)",
+    "act-a-startAt": "muokattu aloitusajaksi  __timeValue__ alkuperäisestä (__timeOldValue__)",
+    "act-a-receivedAt": "muutettu vastaanottamisajaksi __timeValue__ alkuperäisestä (__timeOldValue__)",
+    "a-dueAt": "muutettu vastaanottamisajaksi",
+    "a-endAt": "muokattu loppumisajaksi",
+    "a-startAt": "muokattu aloitusajaksi",
+    "a-receivedAt": "muokattu vastaanottamisajaksi",
+    "almostdue": "nykyinen eräaika %s lähestyy",
+    "pastdue": "nykyinen eräaika %s on mennyt",
+    "duenow": "nykyinen eräaika %s on tänään",
+    "act-withDue": "__card__ eräaika muistutukset [__board__]",
+    "act-almostdue": "muistutti nykyisen eräajan (__timeValue__) kortilla __card__ lähestyvän",
+    "act-pastdue": "muistutti nykyisen eräajan (__timeValue__) kortilla __card__ menneen",
+    "act-duenow": "muistutti nykyisen eräajan (__timeValue__) kortilla __card__ olevan nyt",
+    "act-atUserComment": "Sinut mainittiin [__board__] __card__"
 }

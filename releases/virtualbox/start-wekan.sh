@@ -35,7 +35,49 @@
         #export ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURES_BERORE=3
         #export ACCOUNTS_LOCKOUT_UNKNOWN_USERS_LOCKOUT_PERIOD=60
         #export ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURE_WINDOW=15
-        #---------------------------------------------
+        #---------------------------------------------------------------
+        # ==== RICH TEXT EDITOR IN CARD COMMENTS ====
+        # https://github.com/wekan/wekan/pull/2560
+        export RICHER_CARD_COMMENT_EDITOR=true
+        #---------------------------------------------------------------
+        # ==== Allow to shrink attached/pasted image ====
+        # https://github.com/wekan/wekan/pull/2544
+        #export MAX_IMAGE_PIXEL=1024
+        #export IMAGE_COMPRESS_RATIO=80
+        #---------------------------------------------------------------
+        # ==== BIGEVENTS DUE ETC NOTIFICATIONS =====
+        # https://github.com/wekan/wekan/pull/2541
+        # Introduced a system env var BIGEVENTS_PATTERN default as "due",
+        # so any activityType matches the pattern, system will send out
+        # notifications to all board members no matter they are watching
+        # or tracking the board or not. Owner of the wekan server can
+        # disable the feature by setting this variable to "NONE" or
+        # change the pattern to any valid regex. i.e. '|' delimited
+        # activityType names.
+        # a) Default
+        #export BIGEVENTS_PATTERN=due
+        # b) All
+        #export BIGEVENTS_PATTERN=received|start|due|end
+        # c) Disabled
+        #export BIGEVENTS_PATTERN=NONE
+        #---------------------------------------------------------------
+        # ==== EMAIL DUE DATE NOTIFICATION =====
+        # https://github.com/wekan/wekan/pull/2536
+        # System timelines will be showing any user modification for
+        # dueat startat endat receivedat, also notification to
+        # the watchers and if any card is due, about due or past due.
+        #
+        # Notify due days, default 2 days before and after. 0 = due notifications disabled. Default: 2
+        #export NOTIFY_DUE_DAYS_BEFORE_AND_AFTER=2
+        #
+        # Notify due at hour of day. Default every morning at 8am. Can be 0-23.
+        # If env variable has parsing error, use default. Notification sent to watchers.
+        #export NOTIFY_DUE_AT_HOUR_OF_DAY=8
+        #-----------------------------------------------------------------
+        # ==== EMAIL NOTIFICATION TIMEOUT, ms =====
+        # Defaut: 30000 ms = 30s
+        #export EMAIL_NOTIFICATION_TIMEOUT=30000
+        #-----------------------------------------------------------------
         # CORS: Set Access-Control-Allow-Origin header. Example: *
         #export CORS=*
         # To enable the Set Access-Control-Allow-Headers header. "Authorization,Content-Type" is required for cross-origin use of the API.
@@ -182,8 +224,10 @@
         # example :  export LDAP_BACKGROUND_SYNC=true
         #export LDAP_BACKGROUND_SYNC=false
         # LDAP_BACKGROUND_SYNC_INTERVAL : At which interval does the background task sync in milliseconds
-        # example :  export LDAP_BACKGROUND_SYNC_INTERVAL=12345
-        #export LDAP_BACKGROUND_SYNC_INTERVAL=100
+        # At which interval does the background task sync in milliseconds.
+        # Leave this unset, so it uses default, and does not crash.
+        # https://github.com/wekan/wekan/issues/2354#issuecomment-515305722
+        export LDAP_BACKGROUND_SYNC_INTERVAL=''
         # LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED :
         # example :  export LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED=true
         #export LDAP_BACKGROUND_SYNC_KEEP_EXISTANT_USERS_UPDATED=false

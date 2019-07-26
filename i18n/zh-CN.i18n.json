@@ -702,5 +702,22 @@
     "swimlane-delete-pop": "所有活动将从活动源中删除，您将无法恢复泳道。此操作无法撤销。",
     "restore-all": "全部恢复",
     "delete-all": "全部删除",
-    "loading": "加载中，请稍等。"
+    "loading": "加载中，请稍等。",
+    "previous_as": "上次是",
+    "act-a-dueAt": "修改到期时间：\n时间：__timeValue__\n位置：__card__\n上一个到期日是 __timeOldValue__",
+    "act-a-endAt": "修改结束时间从  (__timeOldValue__) 至 __timeValue__",
+    "act-a-startAt": "修改开始时间从 (__timeOldValue__) 至 __timeValue__",
+    "act-a-receivedAt": "修改接收时间从 (__timeOldValue__) 至 __timeValue__",
+    "a-dueAt": "修改到期时间",
+    "a-endAt": "修改结束时间",
+    "a-startAt": "修改开始时间",
+    "a-receivedAt": "修改接收时间",
+    "almostdue": "当前到期时间%s即将到来",
+    "pastdue": "当前到期时间%s已过",
+    "duenow": "当前到期时间%s为今天",
+    "act-withDue": "__card__ 到期提醒[__board__]",
+    "act-almostdue": "__card__ 的当前到期提醒(__timeValue__) 正在接近",
+    "act-pastdue": "__card__ 的当前到期提醒(__timeValue__) 已经过去了",
+    "act-duenow": "__card__ 的当前到期提醒(__timeValue__) 现在到期",
+    "act-atUserComment": "您在 [__board__] __card__中被提到"
 }

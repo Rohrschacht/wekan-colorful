@@ -3,74 +3,100 @@ CustomFields = new Mongo.Collection('customFields');
 /**
  * A custom field on a card in the board
  */
-CustomFields.attachSchema(new SimpleSchema({
-  boardIds: {
-    /**
-     * the ID of the board
-     */
-    type: [String],
-  },
-  name: {
-    /**
-     * name of the custom field
-     */
-    type: String,
-  },
-  type: {
-    /**
-     * type of the custom field
-     */
-    type: String,
-    allowedValues: ['text', 'number', 'date', 'dropdown'],
-  },
-  settings: {
-    /**
-     * settings of the custom field
-     */
-    type: Object,
-  },
-  'settings.dropdownItems': {
-    /**
-     * list of drop down items objects
-     */
-    type: [Object],
-    optional: true,
-  },
-  'settings.dropdownItems.$': {
-    type: new SimpleSchema({
-      _id: {
-        /**
-         * ID of the drop down item
-         */
-        type: String,
+CustomFields.attachSchema(
+  new SimpleSchema({
+    boardIds: {
+      /**
+       * the ID of the board
+       */
+      type: [String],
+    },
+    name: {
+      /**
+       * name of the custom field
+       */
+      type: String,
+    },
+    type: {
+      /**
+       * type of the custom field
+       */
+      type: String,
+      allowedValues: ['text', 'number', 'date', 'dropdown'],
+    },
+    settings: {
+      /**
+       * settings of the custom field
+       */
+      type: Object,
+    },
+    'settings.dropdownItems': {
+      /**
+       * list of drop down items objects
+       */
+      type: [Object],
+      optional: true,
+    },
+    'settings.dropdownItems.$': {
+      type: new SimpleSchema({
+        _id: {
+          /**
+           * ID of the drop down item
+           */
+          type: String,
+        },
+        name: {
+          /**
+           * name of the drop down item
+           */
+          type: String,
+        },
+      }),
+    },
+    showOnCard: {
+      /**
+       * should we show on the cards this custom field
+       */
+      type: Boolean,
+    },
+    automaticallyOnCard: {
+      /**
+       * should the custom fields automatically be added on cards?
+       */
+      type: Boolean,
+    },
+    showLabelOnMiniCard: {
+      /**
+       * should the label of the custom field be shown on minicards?
+       */
+      type: Boolean,
+    },
+    createdAt: {
+      type: Date,
+      optional: true,
+      // eslint-disable-next-line consistent-return
+      autoValue() {
+        if (this.isInsert) {
+          return new Date();
+        } else {
+          this.unset();
+        }
       },
-      name: {
-        /**
-         * name of the drop down item
-         */
-        type: String,
+    },
+    modifiedAt: {
+      type: Date,
+      denyUpdate: false,
+      // eslint-disable-next-line consistent-return
+      autoValue() {
+        if (this.isInsert || this.isUpsert || this.isUpdate) {
+          return new Date();
+        } else {
+          this.unset();
+        }
       },
-    }),
-  },
-  showOnCard: {
-    /**
-     * should we show on the cards this custom field
-     */
-    type: Boolean,
-  },
-  automaticallyOnCard: {
-    /**
-     * should the custom fields automatically be added on cards?
-     */
-    type: Boolean,
-  },
-  showLabelOnMiniCard: {
-    /**
-     * should the label of the custom field be shown on minicards?
-     */
-    type: Boolean,
-  },
-}));
+    },
+  }),
+);
 
 CustomFields.mutations({
   addBoard(boardId) {
@@ -88,19 +114,28 @@ CustomFields.mutations({
 
 CustomFields.allow({
   insert(userId, doc) {
-    return allowIsAnyBoardMember(userId, Boards.find({
-      _id: {$in: doc.boardIds},
-    }).fetch());
+    return allowIsAnyBoardMember(
+      userId,
+      Boards.find({
+        _id: { $in: doc.boardIds },
+      }).fetch(),
+    );
   },
   update(userId, doc) {
-    return allowIsAnyBoardMember(userId, Boards.find({
-      _id: {$in: doc.boardIds},
-    }).fetch());
+    return allowIsAnyBoardMember(
+      userId,
+      Boards.find({
+        _id: { $in: doc.boardIds },
+      }).fetch(),
+    );
   },
   remove(userId, doc) {
-    return allowIsAnyBoardMember(userId, Boards.find({
-      _id: {$in: doc.boardIds},
-    }).fetch());
+    return allowIsAnyBoardMember(
+      userId,
+      Boards.find({
+        _id: { $in: doc.boardIds },
+      }).fetch(),
+    );
   },
   fetch: ['userId', 'boardIds'],
 });
@@ -108,7 +143,7 @@ CustomFields.allow({
 // not sure if we need this?
 //CustomFields.hookOptions.after.update = { fetchPrevious: false };
 
-function customFieldCreation(userId, doc){
+function customFieldCreation(userId, doc) {
   Activities.insert({
     userId,
     activityType: 'createCustomField',
@@ -117,7 +152,7 @@ function customFieldCreation(userId, doc){
   });
 }
 
-function customFieldDeletion(userId, doc){
+function customFieldDeletion(userId, doc) {
   Activities.insert({
     userId,
     activityType: 'deleteCustomField',
@@ -128,13 +163,17 @@ function customFieldDeletion(userId, doc){
 
 // This has some bug, it does not show edited customField value at Outgoing Webhook,
 // instead it shows undefined, and no listId and swimlaneId.
-function customFieldEdit(userId, doc){
+function customFieldEdit(userId, doc) {
   const card = Cards.findOne(doc.cardId);
+  const customFieldValue = Activities.findOne({ customFieldId: doc._id }).value;
+  const boardId = card.boardId;
+  //boardId: doc.boardIds[0], // We are creating a customField, it has only one boardId
   Activities.insert({
     userId,
-    activityType: 'editCustomField',
-    boardId: doc.boardIds[0], // We are creating a customField, it has only one boardId
+    activityType: 'setCustomField',
+    boardId,
     customFieldId: doc._id,
+    customFieldValue,
     listId: card.listId,
     swimlaneId: card.swimlaneId,
   });
@@ -142,6 +181,7 @@ function customFieldEdit(userId, doc){
 
 if (Meteor.isServer) {
   Meteor.startup(() => {
+    CustomFields._collection._ensureIndex({ modifiedAt: -1 });
     CustomFields._collection._ensureIndex({ boardIds: 1 });
   });
 
@@ -152,9 +192,9 @@ if (Meteor.isServer) {
   CustomFields.before.update((userId, doc, fieldNames, modifier) => {
     if (_.contains(fieldNames, 'boardIds') && modifier.$pull) {
       Cards.update(
-        {boardId: modifier.$pull.boardIds, 'customFields._id': doc._id},
-        {$pull: {'customFields': {'_id': doc._id}}},
-        {multi: true}
+        { boardId: modifier.$pull.boardIds, 'customFields._id': doc._id },
+        { $pull: { customFields: { _id: doc._id } } },
+        { multi: true },
       );
       customFieldEdit(userId, doc);
       Activities.remove({
@@ -180,9 +220,9 @@ if (Meteor.isServer) {
     });
 
     Cards.update(
-      {boardId: {$in: doc.boardIds}, 'customFields._id': doc._id},
-      {$pull: {'customFields': {'_id': doc._id}}},
-      {multi: true}
+      { boardId: { $in: doc.boardIds }, 'customFields._id': doc._id },
+      { $pull: { customFields: { _id: doc._id } } },
+      { multi: true },
     );
   });
 }
@@ -198,18 +238,23 @@ if (Meteor.isServer) {
    *                name: string,
    *                type: string}]
    */
-  JsonRoutes.add('GET', '/api/boards/:boardId/custom-fields', function (req, res) {
-    Authentication.checkUserId( req.userId);
+  JsonRoutes.add('GET', '/api/boards/:boardId/custom-fields', function(
+    req,
+    res,
+  ) {
+    Authentication.checkUserId(req.userId);
     const paramBoardId = req.params.boardId;
     JsonRoutes.sendResult(res, {
       code: 200,
-      data: CustomFields.find({ boardIds: {$in: [paramBoardId]} }).map(function (cf) {
-        return {
-          _id: cf._id,
-          name: cf.name,
-          type: cf.type,
-        };
-      }),
+      data: CustomFields.find({ boardIds: { $in: [paramBoardId] } }).map(
+        function(cf) {
+          return {
+            _id: cf._id,
+            name: cf.name,
+            type: cf.type,
+          };
+        },
+      ),
     });
   });
 
@@ -221,15 +266,22 @@ if (Meteor.isServer) {
    * @param {string} customFieldId the ID of the custom field
    * @return_type CustomFields
    */
-  JsonRoutes.add('GET', '/api/boards/:boardId/custom-fields/:customFieldId', function (req, res) {
-    Authentication.checkUserId( req.userId);
-    const paramBoardId = req.params.boardId;
-    const paramCustomFieldId = req.params.customFieldId;
-    JsonRoutes.sendResult(res, {
-      code: 200,
-      data: CustomFields.findOne({ _id: paramCustomFieldId, boardIds: {$in: [paramBoardId]} }),
-    });
-  });
+  JsonRoutes.add(
+    'GET',
+    '/api/boards/:boardId/custom-fields/:customFieldId',
+    function(req, res) {
+      Authentication.checkUserId(req.userId);
+      const paramBoardId = req.params.boardId;
+      const paramCustomFieldId = req.params.customFieldId;
+      JsonRoutes.sendResult(res, {
+        code: 200,
+        data: CustomFields.findOne({
+          _id: paramCustomFieldId,
+          boardIds: { $in: [paramBoardId] },
+        }),
+      });
+    },
+  );
 
   /**
    * @operation new_custom_field
@@ -244,8 +296,11 @@ if (Meteor.isServer) {
    * @param {boolean} showLabelOnMiniCard should the label of the custom field be shown on minicards?
    * @return_type {_id: string}
    */
-  JsonRoutes.add('POST', '/api/boards/:boardId/custom-fields', function (req, res) {
-    Authentication.checkUserId( req.userId);
+  JsonRoutes.add('POST', '/api/boards/:boardId/custom-fields', function(
+    req,
+    res,
+  ) {
+    Authentication.checkUserId(req.userId);
     const paramBoardId = req.params.boardId;
     const id = CustomFields.direct.insert({
       name: req.body.name,
@@ -254,10 +309,13 @@ if (Meteor.isServer) {
       showOnCard: req.body.showOnCard,
       automaticallyOnCard: req.body.automaticallyOnCard,
       showLabelOnMiniCard: req.body.showLabelOnMiniCard,
-      boardIds: {$in: [paramBoardId]},
+      boardIds: { $in: [paramBoardId] },
     });
 
-    const customField = CustomFields.findOne({_id: id, boardIds: {$in: [paramBoardId]} });
+    const customField = CustomFields.findOne({
+      _id: id,
+      boardIds: { $in: [paramBoardId] },
+    });
     customFieldCreation(req.body.authorId, customField);
 
     JsonRoutes.sendResult(res, {
@@ -278,16 +336,22 @@ if (Meteor.isServer) {
    * @param {string} customFieldId the ID of the custom field
    * @return_type {_id: string}
    */
-  JsonRoutes.add('DELETE', '/api/boards/:boardId/custom-fields/:customFieldId', function (req, res) {
-    Authentication.checkUserId( req.userId);
-    const paramBoardId = req.params.boardId;
-    const id = req.params.customFieldId;
-    CustomFields.remove({ _id: id, boardIds: {$in: [paramBoardId]} });
-    JsonRoutes.sendResult(res, {
-      code: 200,
-      data: {
-        _id: id,
-      },
-    });
-  });
+  JsonRoutes.add(
+    'DELETE',
+    '/api/boards/:boardId/custom-fields/:customFieldId',
+    function(req, res) {
+      Authentication.checkUserId(req.userId);
+      const paramBoardId = req.params.boardId;
+      const id = req.params.customFieldId;
+      CustomFields.remove({ _id: id, boardIds: { $in: [paramBoardId] } });
+      JsonRoutes.sendResult(res, {
+        code: 200,
+        data: {
+          _id: id,
+        },
+      });
+    },
+  );
 }
+
+export default CustomFields;

@@ -3,11 +3,20 @@ Meteor.startup(() => {
   Notifications.subscribe('email', (user, title, description, params) => {
     // add quote to make titles easier to read in email text
     const quoteParams = _.clone(params);
-    ['card', 'list', 'oldList', 'board', 'comment'].forEach((key) => {
+    ['card', 'list', 'oldList', 'board', 'comment'].forEach(key => {
       if (quoteParams[key]) quoteParams[key] = `"${params[key]}"`;
     });
+    ['timeValue', 'timeOldValue'].forEach(key => {
+      quoteParams[key] = quoteParams[key] ? `${params[key]}` : '';
+    });
 
-    const text = `${params.user} ${TAPi18n.__(description, quoteParams, user.getLanguage())}\n${params.url}`;
+    const lan = user.getLanguage();
+    const subject = TAPi18n.__(title, params, lan); // the original function has a fault, i believe the title should be used according to original author
+    const existing = user.getEmailBuffer().length > 0;
+    const text = `${existing ? `\n${subject}\n` : ''}${
+      params.user
+    } ${TAPi18n.__(description, quoteParams, lan)}\n${params.url}`;
+
     user.addEmailBuffer(text);
 
     // unlike setTimeout(func, delay, args),
@@ -25,12 +34,11 @@ Meteor.startup(() => {
       // merge the cached content into single email and flush
       const text = texts.join('\n\n');
       user.clearEmailBuffer();
-
       try {
         Email.send({
           to: user.emails[0].address.toLowerCase(),
           from: Accounts.emailTemplates.from,
-          subject: TAPi18n.__('act-activity-notify', {}, user.getLanguage()),
+          subject,
           text,
         });
       } catch (e) {
@@ -39,5 +47,3 @@ Meteor.startup(() => {
     }, process.env.EMAIL_NOTIFICATION_TIMEOUT || 30000);
   });
 });
-
-

@@ -1,3 +1,146 @@
+# v3.02 Upcoming Wekan release
+
+This release adds the following updates:
+
+- [Updated Wekan on OpenShift](https://github.com/wekan/wekan/commit/85ca2b1363ed0bad8639ba7ed65c55e445816947).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Set LDAP_BACKGROUND_SYNC_INTERVAL='' (empty string) so it works](https://github.com/wekan/wekan/commit/fff144a8279ac36ce83e6b975f17f6dbc35f39d6)
+  and [does not crash](https://github.com/wekan/wekan/issues/2354#issuecomment-515305722).
+  Also updated wekan-postgresql docker-compose.yml to use devel branch docker image, because ToroDB requires MongoDB 3.2,
+  it's not tested yet could newest master branch docker image work with MongoDB 3.2.  
+  Thanks to benh57 and xet7.
+
+and tries to fix following bugs:
+
+- [Try to fix Snap](https://github.com/wekan/wekan/commit/7cf6850cdf77ef51808784e3d275c5be86ff6c92).
+  This [will be tested soon, does this work](https://github.com/wekan/wekan/issues/2533#issuecomment-515329490).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.01 2019-07-26 Wekan release
+
+This release adds the following new features:
+
+- [Rich text editor at card comments, based on
+  Summernote](https://github.com/wekan/wekan/pull/2560).
+  Thanks to whowillcare.
+- [Add setting RICHER_CARD_COMMENT_EDITOR=true to
+  Source/Snap/Docker/Sandstorm](https://github.com/wekan/wekan/commit/4aba290358455433c0fc676e8c9cf1bd627eddde).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.00 2019-07-25 Wekan release
+
+This release:
+
+- works with source, and docker-compose.yml at master branch.
+- Docker release uses Meteor 1.8.1 and MongoDB 4.0.10, so you need to backup your old MongoDB database and
+  restore with --noIndexRestore as described at https://github.com/wekan/wekan/wiki/Backup
+- Snap and Sandstorm builds are not fixed yet, see progress at https://github.com/wekan/wekan/issues/2533
+
+This release adds the following new features:
+
+- [Added label text to labels on minicard](https://github.com/wekan/wekan/commit/c48d5a73cab04db1a1e113e4367dc88573110438).
+  Thanks to xet7.
+- [Allow to shrink attached/pasted image](https://github.com/wekan/wekan/pull/2544).
+  Thanks to whowillcare.
+
+and fixes the following bugs:
+
+- [Fix invites](https://github.com/wekan/wekan/pull/2549).
+  Thanks to justinr1234.
+- [Makes LDAP background sync work. If the sync interval is unspecified, falls back to a hourly default](https://github.com/wekan/wekan/pull/2555).
+  Thanks to pshunter.
+- [Prevent isCommentOnly user adding attachments, editing list names, moving lists,
+  and seeing board settings menu. Show non-editable Custom Fields to isCommentOnly user](https://github.com/wekan/wekan/commit/a68c928896a94c377134f29a7183aa0b5a423720).
+  Thanks to xet7.
+- [Many](https://github.com/wekan/wekan/pull/2546) [Snap](https://github.com/wekan/wekan/pull/2552) [fixes](https://github.com/wekan/wekan/pull/2553).
+  In Progress. Thanks to justrinr1234.
+- [Fixed Dockerfile](https://github.com/wekan/wekan/commit/7df6f305c5cf41ac213623aeffaa7e48c981e0b6) and
+  [docker-compose.yml](https://github.com/wekan/wekan/commit/95698911f92ca728dbaab69406fd09bcbf81339d).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v2.99 2019-07-17 Wekan release
+
+This release adds the following new features:
+
+- [Add Corteza theme. In progress](https://github.com/wekan/wekan/commit/289e78dbd29cca9d97d3b5787c3368583d43b40f).
+  Thanks to xet7.
+- [Notify Due Days: System timelines will be showing any user modification for duat startat endat receivedat,
+  also notification to the watchers and if any card is due, about due or past due](https://github.com/wekan/wekan/pull/2536).
+  ENV variables: NOTIFY_DUE_DAYS_BEFORE_AND_AFTER (default is 2, if 0, will turn off notification for and dued cards),
+  NOTIFY_DUE_AT_HOUR_OF_DAY (any number between 0 - 23, standing for at what hour of a day that the notification will
+  be sent to the watchers). Also [bug fix for this, timeOldValue needs to set to "" in params when it's
+  not set](https://github.com/wekan/wekan/pull/2541).
+  Thanks to whowillcare.
+- [Notify Due Days: Add settings to Snap/Docker/Source. Rename env variables to NOTIFY_DUE_DAYS_BEFORE_AND_AFTER and
+  NOTIFY_DUE_AT_HOUR_OF_DAY](https://github.com/wekan/wekan/commit/5084cddf37ba16ce0855f8575c39f5e62d1b7f67).
+  Thanks to xet7.
+- [BIGEVENTS_PATTERN: When user being @ in comment, as long as it's not himself, a notification will be
+  sent out no matter this user is watching the board or not](https://github.com/wekan/wekan/pull/2541).
+  Introduced a system env var BIGEVENTS_PATTERN default as "due", so any activityType matches the pattern,
+  system will send out notifications to all board members no matter they are watching or tracking
+  the board or not. Owner of the Wekan server can disable the feature by setting this variable to "NONE"
+  or change the pattern to any valid regex. i.e. '|' delimited activityType names.
+  Thanks to whowillcare.
+- [Add BIGEVENTS_PATTERN to Source/Snap/Docker](https://github.com/wekan/wekan/commit/d7c09df7d2649bf2d2b61772c251f81793a6ed77).
+  Thanks to xet7.
+
+and adds the following updates:
+
+- [Update Meteor mongo package version](https://github.com/wekan/wekan/commit/96065d11a543852c1069cbab528bd08508b4a27c).
+  Thanks to xet7.
+- [Update dependencies](https://github.com/wekan/wekan/commit/d82c72f1c1df908e92045e5034fa12b33fc7f70c).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- RELAX THEME: Use [only in this theme](https://github.com/wekan/wekan/commit/3ad6e554dceea822dee7390872260e872a792dcd)
+  the aggressive [red color and big bold serif font style
+  number](https://github.com/wekan/wekan/commit/bbc68309af0029f2bc4194db4c7e79689f888ea4#commitcomment-34216371) and
+  [card details text emphasis](https://github.com/wekan/wekan/commit/48ebc5f11745b125ce01d08d60e2d8e3a9419a5f#commitcomment-34268095)
+  Thanks to hever and xet7.
+- [Try to fix docker-compose.yml to use correct master branch that has
+  meteor 1.8.1](https://github.com/wekan/wekan/commit/202cc5a797b6269ec422c6f2e532a49f09d4e30a).
+  Thanks to xet7.
+- [Outgoing Webhooks setCustomField: Add board name, card name, custom field name to be
+  visible](https://github.com/wekan/wekan/commit/2003d90467debeadf51b69630c80ee6040524f52).
+  Still missing: custom field value, list name, swimlane name.
+  Thanks to xet7.
+- [Don't remove boardoverlay when mouse leaves carddetails](https://github.com/wekan/wekan/pull/2540).
+  This reduces Wekan board flashiness.
+  Thanks to newhinton.
+- [Limit the board list to 2 or 1 for mobile clients](https://github.com/wekan/wekan/pull/2542).
+  As a mobile user, the board size of in the home page too small, so the user is easily to
+  click on archive or copy button by accident. Increase the board size to 50% for pixel
+  greater than 360 and lesser than 800 and height to 8rem, 100% for any screen is even smaller.
+  This will reduce the accident much more.
+  Thanks to whowillcare.
+- [Add check for board member isActive](https://github.com/wekan/wekan/commit fe42eb1d014c06dfed8114a00b29eac9b08baec6).
+  Thanks to xet7.
+
+and has the following features in progress, not anything visible yet:
+
+- [Teams/Organizations: Add beginnings of database structure](https://github.com/wekan/wekan/issues/802#issuecomment-505986270).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v2.98 2019-07-02 Wekan release
+
+This release adds the following new features, thanks to xet7:
+
+- [Add Wekan v2.95-v2.97 master branch features and fixes to meteor-1.8 branch](https://github.com/wekan/wekan/commit/34b2168d0dda253dedabbee47031873efa4ae446).
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v2.97 2019-07-01 Wekan release
 
 This release [adds the following new features](https://github.com/wekan/wekan/commit/3e8cb8c6e1617ef03ebce045d3b93aeb2cf91228), thanks to xet7:
@@ -7,7 +150,7 @@ This release [adds the following new features](https://github.com/wekan/wekan/co
 - Add new background colors with themes: dark, relax.
 
 Note: Due Date etc on cards is visible on all background colors and themes. Hiding is not implemented yet.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.96 2019-07-01 Wekan release
@@ -26,7 +169,7 @@ Thanks to above GitHub users for their contributions and translators for their t
 
 This release adds the following new features, thanks to xet7:
 
-- [Make list header add card + button more black, to make it more visible](https://github.com/wekan/wekan/commit/b260d05a8b2f87c29dd998d42103d1220b20cc08). 
+- [Make list header add card + button more black, to make it more visible](https://github.com/wekan/wekan/commit/b260d05a8b2f87c29dd998d42103d1220b20cc08).
 - [On minicard, make comment icon and number of comments have red color
   on white rounded background, so it is more visible when there is comments on card](https://github.com/wekan/wekan/commit/bbc68309af0029f2bc4194db4c7e79689f888ea4).
 - [Make card description text more visible with black borders and more white text area](https://github.com/wekan/wekan/commit/48ebc5f11745b125ce01d08d60e2d8e3a9419a5f).
@@ -39,15 +182,14 @@ and adds the following [themes to board background colors](https://github.com/we
 
 Thanks to above GitHub users for their contributions and translators for their translations.
 
-# v2.94 2019-06-30 Wekan RasPi3 Meteor 1.8.1 release
+# v2.94 2019-06-29 Wekan release
 
-This release adds the following new features, thanks to xet7:
+This release adds the following updates:
 
-- [Wekan now availabe for RasPi3, arm64 servers etc](https://github.com/wekan/wekan/wiki/Raspberry-Pi).
-  See [meteor-1.8 branch ChangeLog](https://github.com/wekan/wekan/blob/meteor-1.8/CHANGELOG.md) for changes.
-  For Docker, see docker-compose.yml at https://github.com/wekan/wekan meteor-1.8 branch.
+- [Prettier & eslint project style update](https://github.com/wekan/wekan/pull/2520).
+  Thanks to justinr1234.
 
-Currently Snap and Sandstorm are at Meteor 1.6 still, in this master branch. Sometime later all platforms move to meteor-1.8 brach when builds work.
+Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.93 2019-06-28 Wekan release
 
@@ -170,7 +312,7 @@ This release fixes the following bugs:
 
 - [Fix OIDC Docker login. Empty string results to empty array at wekan/server/authentication.js](https://github.com/wekan/wekan/commit/bddbaa7bc2f3cfe8553a2265e168231ab51876f3).
   Thanks to xet7.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v2.81 2019-06-13 Wekan release
@@ -433,7 +575,7 @@ and adds the following updates:
   because [it was found old version was in use](https://github.com/wekan/wekan/issues/2334).
   Thanks to shaygover and xet7.
 - [Upgrade to Node 8.16.0](https://github.com/wekan/wekan/commit/6117097a93bfb11c8bd4c87a23c44a50e22ceb87).
-  Thanks to Node developers and xet7.    
+  Thanks to Node developers and xet7.
 - [Upgrade Docker base image to ubuntu:disco](https://github.com/wekan/wekan/commit/bd14ee3b1f450ddc6dec26ccc8da702b839942e5).
   Thanks to Ubuntu developers and xet7.
 
