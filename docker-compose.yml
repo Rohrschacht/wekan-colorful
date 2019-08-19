@@ -93,7 +93,7 @@ services:
     #-------------------------------------------------------------------------------------
     # ==== MONGODB AND METEOR VERSION ====
     # a) For Wekan Meteor 1.8.x version at master branch, use mongo 4.x
-    image: mongo:4.0.10
+    image: mongo:4.0.11
     # b) For Wekan Meteor 1.6.x version at devel branch.
     # Only for Snap and Sandstorm while they are not upgraded yet to Meteor 1.8.x
     #image: mongo:3.2.21
@@ -115,10 +115,8 @@ services:
     # NOTE: Quay is currently not updated, use Docker Hub image below c)
     # a) For Wekan Meteor 1.8.x version at master branch,
     #    using https://quay.io/wekan/wekan automatic builds
-    #image: quay.io/wekan/wekan:master
-    # b) For Wekan Meteor 1.6.x version at master/devel/edge branches.
-    # Only for Snap and Sandstorm while they are not upgraded yet to Meteor 1.8.x
-    # c) Using specific Meteor 1.6.x version tag:
+    # image: quay.io/wekan/wekan
+    # b) Using specific Meteor 1.6.x version tag:
     # image: quay.io/wekan/wekan:v1.95
     # c) Using Docker Hub automatic builds https://hub.docker.com/r/wekanteam/wekan
     # image: wekanteam/wekan
@@ -234,6 +232,18 @@ services:
       #- ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURES_BERORE=3
       #- ACCOUNTS_LOCKOUT_UNKNOWN_USERS_LOCKOUT_PERIOD=60
       #- ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURE_WINDOW=15
+      #---------------------------------------------------------------
+      # ==== STORE ATTACHMENT ON SERVER FILESYSTEM INSTEAD OF MONGODB ====
+      # https://github.com/wekan/wekan/pull/2603
+      #- ATTACHMENTS_STORE_PATH = <pathname> # pathname can be relative or fullpath
+      #---------------------------------------------------------------
+      # ==== RICH TEXT EDITOR IN CARD COMMENTS ====
+      # https://github.com/wekan/wekan/pull/2560
+      - RICHER_CARD_COMMENT_EDITOR=true
+      #---------------------------------------------------------------
+      # ==== CARD OPENED, SEND WEBHOOK MESSAGE ====
+      # https://github.com/wekan/wekan/issues/2518
+      - CARD_OPENED_WEBHOOK_ENABLED=false
       #---------------------------------------------------------------
       # ==== Allow to shrink attached/pasted image ====
       # https://github.com/wekan/wekan/pull/2544
@@ -449,6 +459,9 @@ services:
       #
       # Option to login to the LDAP server with the user's own username and password, instead of an administrator key. Default: false (use administrator key).
       #- LDAP_USER_AUTHENTICATION="true"
+      #
+      # Which field is used to find the user for the user authentication. Default: uid.
+      #- LDAP_USER_AUTHENTICATION_FIELD="uid"
       #
       # Optional extra LDAP filters. Don't forget the outmost enclosing parentheses if needed
       #- LDAP_USER_SEARCH_FILTER=

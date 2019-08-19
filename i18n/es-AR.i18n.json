@@ -73,6 +73,8 @@
   "activity-unchecked-item-card": "unchecked %s in checklist %s",
   "activity-checklist-completed-card": "completed checklist __checklist__ at card __card__ at list __list__ at swimlane __swimlane__ at board __board__",
   "activity-checklist-uncompleted-card": "uncompleted the checklist %s",
+  "activity-editComment": "edited comment %s",
+  "activity-deleteComment": "deleted comment %s",
   "add-attachment": "Agregar Adjunto",
   "add-board": "Agregar Tablero",
   "add-card": "Agregar Tarjeta",
@@ -304,6 +306,8 @@
   "filter-no-label": "Sin etiqueta",
   "filter-no-member": "No es miembro",
   "filter-no-custom-fields": "No Custom Fields",
+  "filter-show-archive": "Show archived lists",
+  "filter-hide-empty": "Hide empty lists",
   "filter-on": "El filtro está activado",
   "filter-on-desc": "Estás filtrando cartas en este tablero. Clickeá acá para editar el filtro.",
   "filter-to-selection": "Filtrar en la selección",
@@ -512,6 +516,10 @@
   "new-outgoing-webhook": "Nuevo Gancho Web",
   "no-name": "(desconocido)",
   "Node_version": "Versión de Node",
+  "Meteor_version": "Meteor version",
+  "MongoDB_version": "MongoDB version",
+  "MongoDB_storage_engine": "MongoDB storage engine",
+  "MongoDB_Oplog_enabled": "MongoDB Oplog enabled",
   "OS_Arch": "Arch del SO",
   "OS_Cpus": "Cantidad de CPU del SO",
   "OS_Freemem": "Memoria Libre del SO",
@@ -719,5 +727,8 @@
   "act-almostdue": "was reminding the current due (__timeValue__) of __card__ is approaching",
   "act-pastdue": "was reminding the current due (__timeValue__) of __card__ is past",
   "act-duenow": "was reminding the current due (__timeValue__) of __card__ is now",
-  "act-atUserComment": "You were mentioned in [__board__] __card__"
+  "act-atUserComment": "You were mentioned in [__board__] __card__",
+  "delete-user-confirm-popup": "Are you sure you want to delete this account? There is no undo.",
+  "accounts-allowUserDelete": "Allow users to self delete their account",
+  "hide-minicard-label-text": "Hide minicard label text"
 }

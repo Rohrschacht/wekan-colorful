@@ -13,9 +13,9 @@ Meteor.startup(() => {
     const lan = user.getLanguage();
     const subject = TAPi18n.__(title, params, lan); // the original function has a fault, i believe the title should be used according to original author
     const existing = user.getEmailBuffer().length > 0;
-    const text = `${existing ? `\n${subject}\n` : ''}${
+    const text = `${existing ? `<br/>\n${subject}<br/>\n` : ''}${
       params.user
-    } ${TAPi18n.__(description, quoteParams, lan)}\n${params.url}`;
+    } ${TAPi18n.__(description, quoteParams, lan)}<br/>\n${params.url}`;
 
     user.addEmailBuffer(text);
 
@@ -32,14 +32,14 @@ Meteor.startup(() => {
       if (texts.length === 0) return;
 
       // merge the cached content into single email and flush
-      const text = texts.join('\n\n');
+      const html = texts.join('<br/>\n\n');
       user.clearEmailBuffer();
       try {
         Email.send({
           to: user.emails[0].address.toLowerCase(),
           from: Accounts.emailTemplates.from,
           subject,
-          text,
+          html,
         });
       } catch (e) {
         return;

@@ -40,6 +40,9 @@
         # https://github.com/wekan/wekan/pull/2560
         export RICHER_CARD_COMMENT_EDITOR=true
         #---------------------------------------------------------------
+        # ==== CARD OPENED, SEND WEBHOOK MESSAGE ====
+        export CARD_OPENED_WEBHOOK_ENABLED=false
+        #---------------------------------------------------------------
         # ==== Allow to shrink attached/pasted image ====
         # https://github.com/wekan/wekan/pull/2544
         #export MAX_IMAGE_PIXEL=1024
@@ -245,6 +248,8 @@
         #export LDAP_REJECT_UNAUTHORIZED=false
         # Option to login to the LDAP server with the user's own username and password, instead of an administrator key. Default: false (use administrator key).
         #export LDAP_USER_AUTHENTICATION=true
+        # Which field is used to find the user for the user authentication. Default: uid.
+        #export LDAP_USER_AUTHENTICATION_FIELD=uid
         # LDAP_USER_SEARCH_FILTER : Optional extra LDAP filters. Don't forget the outmost enclosing parentheses if needed
         # example :  export LDAP_USER_SEARCH_FILTER=
         #export LDAP_USER_SEARCH_FILTER=

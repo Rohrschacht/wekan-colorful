@@ -73,6 +73,8 @@
   "activity-unchecked-item-card": "desmarcado %s en la lista de verificación %s",
   "activity-checklist-completed-card": "completada la lista de verificación __checklist__ de la tarjeta __card__ de la lista __list__ del carril __swimlane__ del tablero __board__",
   "activity-checklist-uncompleted-card": "no completó la lista de verificación %s",
+  "activity-editComment": "edited comment %s",
+  "activity-deleteComment": "deleted comment %s",
   "add-attachment": "Añadir adjunto",
   "add-board": "Añadir tablero",
   "add-card": "Añadir una tarjeta",
@@ -304,6 +306,8 @@
   "filter-no-label": "Sin etiqueta",
   "filter-no-member": "Sin miembro",
   "filter-no-custom-fields": "Sin campos personalizados",
+  "filter-show-archive": "Show archived lists",
+  "filter-hide-empty": "Hide empty lists",
   "filter-on": "Filtrado activado",
   "filter-on-desc": "Estás filtrando tarjetas en este tablero. Haz clic aquí para editar el filtro.",
   "filter-to-selection": "Filtrar la selección",
@@ -512,6 +516,10 @@
   "new-outgoing-webhook": "Nuevo webhook saliente",
   "no-name": "(Desconocido)",
   "Node_version": "Versión de Node",
+  "Meteor_version": "Meteor version",
+  "MongoDB_version": "MongoDB version",
+  "MongoDB_storage_engine": "MongoDB storage engine",
+  "MongoDB_Oplog_enabled": "MongoDB Oplog enabled",
   "OS_Arch": "Arquitectura del sistema",
   "OS_Cpus": "Número de CPUs del sistema",
   "OS_Freemem": "Memoria libre del sistema",
@@ -719,5 +727,8 @@
   "act-almostdue": "was reminding the current due (__timeValue__) of __card__ is approaching",
   "act-pastdue": "was reminding the current due (__timeValue__) of __card__ is past",
   "act-duenow": "was reminding the current due (__timeValue__) of __card__ is now",
-  "act-atUserComment": "You were mentioned in [__board__] __card__"
+  "act-atUserComment": "You were mentioned in [__board__] __card__",
+  "delete-user-confirm-popup": "Are you sure you want to delete this account? There is no undo.",
+  "accounts-allowUserDelete": "Allow users to self delete their account",
+  "hide-minicard-label-text": "Hide minicard label text"
 }
