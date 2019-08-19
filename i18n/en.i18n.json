@@ -73,6 +73,8 @@
   "activity-unchecked-item-card": "unchecked %s in checklist %s",
   "activity-checklist-completed-card": "completed checklist __checklist__ at card __card__ at list __list__ at swimlane __swimlane__ at board __board__",
   "activity-checklist-uncompleted-card": "uncompleted the checklist %s",
+  "activity-editComment": "edited comment %s",
+  "activity-deleteComment": "deleted comment %s",
   "add-attachment": "Add Attachment",
   "add-board": "Add Board",
   "add-card": "Add Card",
@@ -304,6 +306,8 @@
   "filter-no-label": "No label",
   "filter-no-member": "No member",
   "filter-no-custom-fields": "No Custom Fields",
+  "filter-show-archive": "Show archived lists",
+  "filter-hide-empty": "Hide empty lists",
   "filter-on": "Filter is on",
   "filter-on-desc": "You are filtering cards on this board. Click here to edit filter.",
   "filter-to-selection": "Filter to selection",
@@ -512,6 +516,10 @@
   "new-outgoing-webhook": "New Outgoing Webhook",
   "no-name": "(Unknown)",
   "Node_version": "Node version",
+  "Meteor_version": "Meteor version",
+  "MongoDB_version": "MongoDB version",
+  "MongoDB_storage_engine": "MongoDB storage engine",
+  "MongoDB_Oplog_enabled": "MongoDB Oplog enabled",
   "OS_Arch": "OS Arch",
   "OS_Cpus": "OS CPU Count",
   "OS_Freemem": "OS Free Memory",
@@ -722,5 +730,8 @@
   "act-almostdue": "was reminding the current due (__timeValue__) of __card__ is approaching",
   "act-pastdue": "was reminding the current due (__timeValue__) of __card__ is past",
   "act-duenow": "was reminding the current due (__timeValue__) of __card__ is now",
-  "act-atUserComment": "You were mentioned in [__board__] __card__"
+  "act-atUserComment": "You were mentioned in [__board__] __card__",
+  "delete-user-confirm-popup": "Are you sure you want to delete this account? There is no undo.",
+  "accounts-allowUserDelete": "Allow users to self delete their account",
+  "hide-minicard-label-text": "Hide minicard label text"
 }

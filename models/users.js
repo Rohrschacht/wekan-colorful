@@ -109,7 +109,14 @@ Users.attachSchema(
     },
     'profile.hiddenSystemMessages': {
       /**
-       * does the user wants to hide system messages?
+       * does the user want to hide system messages?
+       */
+      type: Boolean,
+      optional: true,
+    },
+    'profile.hiddenMinicardLabelText': {
+      /**
+       * does the user want to hide minicard label texts?
        */
       type: Boolean,
       optional: true,
@@ -253,7 +260,7 @@ Users.attachSchema(
 Users.allow({
   update(userId) {
     const user = Users.findOne(userId);
-    return user && Meteor.user().isAdmin;
+    return user && Meteor.user().isAdmin; // GitHub issue #2590
   },
   remove(userId, doc) {
     const adminsNumber = Users.find({ isAdmin: true }).count();
@@ -359,6 +366,11 @@ Users.helpers({
     return profile.hiddenSystemMessages || false;
   },
 
+  hasHiddenMinicardLabelText() {
+    const profile = this.profile || {};
+    return profile.hiddenMinicardLabelText || false;
+  },
+
   getEmailBuffer() {
     const { emailBuffer = [] } = this.profile || {};
     return emailBuffer;
@@ -462,6 +474,14 @@ Users.mutations({
     };
   },
 
+  toggleLabelText(value = false) {
+    return {
+      $set: {
+        'profile.hiddenMinicardLabelText': !value,
+      },
+    };
+  },
+
   addNotification(activityId) {
     return {
       $addToSet: {
@@ -525,6 +545,10 @@ Meteor.methods({
     const user = Meteor.user();
     user.toggleSystem(user.hasHiddenSystemMessages());
   },
+  toggleMinicardLabelText() {
+    const user = Meteor.user();
+    user.toggleLabelText(user.hasHiddenMinicardLabelText());
+  },
   changeLimitToShowCardsCount(limit) {
     check(limit, Number);
     Meteor.user().setShowCardsCountAt(limit);
@@ -586,8 +610,9 @@ if (Meteor.isServer) {
         board &&
         board.members &&
         _.contains(_.pluck(board.members, 'userId'), inviter._id) &&
-        _.where(board.members, { userId: inviter._id })[0].isActive &&
-        _.where(board.members, { userId: inviter._id })[0].isAdmin;
+        _.where(board.members, { userId: inviter._id })[0].isActive;
+      // GitHub issue 2060
+      //_.where(board.members, { userId: inviter._id })[0].isAdmin;
       if (!allowInvite) throw new Meteor.Error('error-board-notAMember');
 
       this.unblock();
@@ -946,8 +971,8 @@ if (Meteor.isServer) {
 if (Meteor.isServer) {
   // Middleware which checks that API is enabled.
   JsonRoutes.Middleware.use(function(req, res, next) {
-    const api = req.url.search('api');
-    if ((api === 1 && process.env.WITH_API === 'true') || api === -1) {
+    const api = req.url.startsWith('/api');
+    if ((api === true && process.env.WITH_API === 'true') || api === false) {
       return next();
     } else {
       res.writeHead(301, { Location: '/' });

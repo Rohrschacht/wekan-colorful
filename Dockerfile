@@ -22,6 +22,8 @@ ENV BUILD_DEPS="apt-utils bsdtar gnupg gosu wget curl bzip2 g++ build-essential 
     ACCOUNTS_LOCKOUT_UNKNOWN_USERS_LOCKOUT_PERIOD=60 \
     ACCOUNTS_LOCKOUT_UNKNOWN_USERS_FAILURE_WINDOW=15 \
     RICHER_CARD_COMMENT_EDITOR=true \
+    CARD_OPENED_WEBHOOK_ENABLED=false \
+    ATTACHMENTS_STORE_PATH="" \
     MAX_IMAGE_PIXEL="" \
     IMAGE_COMPRESS_RATIO="" \
     BIGEVENTS_PATTERN="" \
@@ -70,6 +72,7 @@ ENV BUILD_DEPS="apt-utils bsdtar gnupg gosu wget curl bzip2 g++ build-essential 
     LDAP_CA_CERT="" \
     LDAP_REJECT_UNAUTHORIZED=false \
     LDAP_USER_AUTHENTICATION=false \
+    LDAP_USER_AUTHENTICATION_FIELD=uid \
     LDAP_USER_SEARCH_FILTER="" \
     LDAP_USER_SEARCH_SCOPE="" \
     LDAP_USER_SEARCH_FIELD="" \
@@ -256,6 +259,11 @@ RUN \
     #cd /home/wekan/app_build/bundle/programs/server/npm/node_modules/meteor/npm-bcrypt && \
     #gosu wekan:wekan rm -rf node_modules/bcrypt && \
     #gosu wekan:wekan npm install bcrypt && \
+    #
+    # Delete phantomjs
+    #cd /home/wekan/app_build/bundle && \
+    #find . -name "*phantomjs*" | xargs rm -rf && \
+    #
     cd /home/wekan/app_build/bundle/programs/server/ && \
     gosu wekan:wekan npm install && \
     #gosu wekan:wekan npm install bcrypt && \
