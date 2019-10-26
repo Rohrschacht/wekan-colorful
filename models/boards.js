@@ -55,6 +55,8 @@ Boards.attachSchema(
       autoValue() {
         if (this.isInsert) {
           return new Date();
+        } else if (this.isUpsert) {
+          return { $setOnInsert: new Date() };
         } else {
           this.unset();
         }
@@ -695,6 +697,13 @@ Boards.helpers({
       result = Swimlanes.findOne({ boardId: this._id });
     }
     return result;
+  },
+
+  cardsDueInBetween(start, end) {
+    return Cards.find({
+      boardId: this._id,
+      dueAt: { $gte: start, $lte: end },
+    });
   },
 
   cardsInInterval(start, end) {

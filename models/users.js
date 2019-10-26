@@ -54,6 +54,8 @@ Users.attachSchema(
       autoValue() {
         if (this.isInsert) {
           return new Date();
+        } else if (this.isUpsert) {
+          return { $setOnInsert: new Date() };
         } else {
           this.unset();
         }
@@ -258,9 +260,14 @@ Users.attachSchema(
 );
 
 Users.allow({
-  update(userId) {
-    const user = Users.findOne(userId);
-    return user && Meteor.user().isAdmin; // GitHub issue #2590
+  update(userId, doc) {
+    const user = Users.findOne({ _id: userId });
+    if ((user && user.isAdmin) || (Meteor.user() && Meteor.user().isAdmin))
+      return true;
+    if (!user) {
+      return false;
+    }
+    return doc._id === userId;
   },
   remove(userId, doc) {
     const adminsNumber = Users.find({ isAdmin: true }).count();
@@ -534,6 +541,7 @@ Users.mutations({
 Meteor.methods({
   setUsername(username, userId) {
     check(username, String);
+    check(userId, String);
     const nUsersWithUsername = Users.find({ username }).count();
     if (nUsersWithUsername > 0) {
       throw new Meteor.Error('username-already-taken');

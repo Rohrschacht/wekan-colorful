@@ -31,7 +31,7 @@ BlazeComponent.extendComponent({
     const itemsSelector = '.js-minicard:not(.placeholder, .js-card-composer)';
     const $cards = this.$('.js-minicards');
 
-    if (window.matchMedia('(max-width: 1199px)').matches) {
+    if (Utils.isMiniScreen()) {
       $('.js-minicards').sortable({
         handle: '.handle',
       });
