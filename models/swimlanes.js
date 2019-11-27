@@ -174,6 +174,25 @@ Swimlanes.helpers({
   },
 
   lists() {
+    //currentUser = Meteor.user();
+    //if (currentUser) {
+    //  enabled = Meteor.user().hasSortBy();
+    //}
+    //return enabled ? this.newestLists() : this.draggableLists();
+    return this.draggableLists();
+  },
+  newestLists() {
+    // sorted lists from newest to the oldest, by its creation date or its cards' last modification date
+    return Lists.find(
+      {
+        boardId: this.boardId,
+        swimlaneId: { $in: [this._id, ''] },
+        archived: false,
+      },
+      { sort: { modifiedAt: -1 } },
+    );
+  },
+  draggableLists() {
     return Lists.find(
       {
         boardId: this.boardId,

@@ -121,11 +121,6 @@ BlazeComponent.extendComponent({
       // Send Webhook but not create Activities records ---
       const card = this.currentData();
       const userId = Meteor.userId();
-      //console.log(`userId: ${userId}`);
-      //console.log(`cardId: ${card._id}`);
-      //console.log(`boardId: ${card.boardId}`);
-      //console.log(`listId: ${card.listId}`);
-      //console.log(`swimlaneId: ${card.swimlaneId}`);
       const params = {
         userId,
         cardId: card._id,
@@ -134,16 +129,25 @@ BlazeComponent.extendComponent({
         user: Meteor.user().username,
         url: '',
       };
-      //console.log('looking for integrations...');
+
       const integrations = Integrations.find({
-        boardId: card.boardId,
-        type: 'outgoing-webhooks',
+        boardId: { $in: [card.boardId, Integrations.Const.GLOBAL_WEBHOOK_ID] },
         enabled: true,
         activities: { $in: ['CardDetailsRendered', 'all'] },
       }).fetch();
-      //console.log(`Investigation length: ${integrations.length}`);
+
       if (integrations.length > 0) {
-        Meteor.call('outgoingWebhooks', integrations, 'CardSelected', params);
+        integrations.forEach(integration => {
+          Meteor.call(
+            'outgoingWebhooks',
+            integration,
+            'CardSelected',
+            params,
+            () => {
+              return;
+            },
+          );
+        });
       }
       //-------------
     }
@@ -309,6 +313,8 @@ BlazeComponent.extendComponent({
         },
         'click .js-member': Popup.open('cardMember'),
         'click .js-add-members': Popup.open('cardMembers'),
+        'click .js-assignee': Popup.open('cardAssignee'),
+        'click .js-add-assignees': Popup.open('cardAssignees'),
         'click .js-add-labels': Popup.open('cardLabels'),
         'click .js-received-date': Popup.open('editCardReceivedDate'),
         'click .js-start-date': Popup.open('editCardStartDate'),
@@ -341,6 +347,58 @@ BlazeComponent.extendComponent({
     ];
   },
 }).register('cardDetails');
+
+Template.cardDetails.helpers({
+  userData() {
+    // We need to handle a special case for the search results provided by the
+    // `matteodem:easy-search` package. Since these results gets published in a
+    // separate collection, and not in the standard Meteor.Users collection as
+    // expected, we use a component parameter ("property") to distinguish the
+    // two cases.
+    const userCollection = this.esSearch ? ESSearchResults : Users;
+    return userCollection.findOne(this.userId, {
+      fields: {
+        profile: 1,
+        username: 1,
+      },
+    });
+  },
+
+  assigneeSelected() {
+    if (this.getAssignees().length === 0) {
+      return false;
+    } else {
+      return true;
+    }
+  },
+
+  memberType() {
+    const user = Users.findOne(this.userId);
+    return user && user.isBoardAdmin() ? 'admin' : 'normal';
+  },
+
+  presenceStatusClassName() {
+    const user = Users.findOne(this.userId);
+    const userPresence = presences.findOne({ userId: this.userId });
+    if (user && user.isInvitedTo(Session.get('currentBoard'))) return 'pending';
+    else if (!userPresence) return 'disconnected';
+    else if (Session.equals('currentBoard', userPresence.state.currentBoardId))
+      return 'active';
+    else return 'idle';
+  },
+});
+
+Template.userAvatarAssigneeInitials.helpers({
+  initials() {
+    const user = Users.findOne(this.userId);
+    return user && user.getInitials();
+  },
+
+  viewPortWidth() {
+    const user = Users.findOne(this.userId);
+    return ((user && user.getInitials().length) || 1) * 12;
+  },
+});
 
 // We extends the normal InlinedForm component to support UnsavedEdits draft
 // feature.
@@ -399,6 +457,7 @@ Template.cardDetailsActionsPopup.helpers({
 
 Template.cardDetailsActionsPopup.events({
   'click .js-members': Popup.open('cardMembers'),
+  'click .js-assignees': Popup.open('cardAssignees'),
   'click .js-labels': Popup.open('cardLabels'),
   'click .js-attachments': Popup.open('cardAttachments'),
   'click .js-custom-fields': Popup.open('cardCustomFields'),
@@ -806,3 +865,76 @@ EscapeActions.register(
     noClickEscapeOn: '.js-card-details,.board-sidebar,#header',
   },
 );
+
+Template.cardAssigneesPopup.events({
+  'click .js-select-assignee'(event) {
+    const card = Cards.findOne(Session.get('currentCard'));
+    const assigneeId = this.userId;
+    card.toggleAssignee(assigneeId);
+    event.preventDefault();
+  },
+});
+
+Template.cardAssigneesPopup.helpers({
+  isCardAssignee() {
+    const card = Template.parentData();
+    const cardAssignees = card.getAssignees();
+
+    return _.contains(cardAssignees, this.userId);
+  },
+
+  user() {
+    return Users.findOne(this.userId);
+  },
+});
+
+Template.cardAssigneePopup.helpers({
+  userData() {
+    // We need to handle a special case for the search results provided by the
+    // `matteodem:easy-search` package. Since these results gets published in a
+    // separate collection, and not in the standard Meteor.Users collection as
+    // expected, we use a component parameter ("property") to distinguish the
+    // two cases.
+    const userCollection = this.esSearch ? ESSearchResults : Users;
+    return userCollection.findOne(this.userId, {
+      fields: {
+        profile: 1,
+        username: 1,
+      },
+    });
+  },
+
+  memberType() {
+    const user = Users.findOne(this.userId);
+    return user && user.isBoardAdmin() ? 'admin' : 'normal';
+  },
+
+  presenceStatusClassName() {
+    const user = Users.findOne(this.userId);
+    const userPresence = presences.findOne({ userId: this.userId });
+    if (user && user.isInvitedTo(Session.get('currentBoard'))) return 'pending';
+    else if (!userPresence) return 'disconnected';
+    else if (Session.equals('currentBoard', userPresence.state.currentBoardId))
+      return 'active';
+    else return 'idle';
+  },
+
+  isCardAssignee() {
+    const card = Template.parentData();
+    const cardAssignees = card.getAssignees();
+
+    return _.contains(cardAssignees, this.userId);
+  },
+
+  user() {
+    return Users.findOne(this.userId);
+  },
+});
+
+Template.cardAssigneePopup.events({
+  'click .js-remove-assignee'() {
+    Cards.findOne(this.cardId).unassignAssignee(this.userId);
+    Popup.close();
+  },
+  'click .js-edit-profile': Popup.open('editProfile'),
+});
