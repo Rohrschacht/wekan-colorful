@@ -1,3 +1,209 @@
+# v3.71 2020-01-18 Sandstorm-only Wekan release
+
+This release fixes the following bugs:
+
+- [Try to fix Wekan at Sandstorm by using Meteor 1.8.x and Node 8.17.0 at Sandstorm](https://github.com/wekan/wekan/commit/5e5ab95410c715a4379631456fc5547c497898b0).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.70 2020-01-18 Wekan release
+
+This release fixes the following bugs:
+
+- [Add missing LD_LIBRARY_PATH to use libssl and libcurl](https://github.com/wekan/wekan/10f142a1a05acb98a175ccb0326fb0c1d3e3713f).
+  Thanks to xet7.
+- [Use Meteor 1.8.x](https://github.com/wekan/wekan/commit/55a2aa90cbbf44200e9b0b9f4bd08b6177f1bb95)
+  [on Snap](https://github.com/wekan/wekan/commit/6a01170d8696322462c4065ce0cf4a637a058975), because
+  Snap builds do not work yet for Meteor 1.9, Node 12.14.1 and MongoDB 4.2.2.
+  Docker version works with Meteor 1.9.
+  Thanks to xet7.
+- [Try to fix Node 12 Buffer() deprecation errors](https://github.com/wekan/wekan/commit/9b905c2833d54cf34d1875148075b2bf756d943a).
+  Thanks to xet7.
+- [Add Snap Meteor 1.8.x files to lint ignore files](https://github.com/wekan/wekan/commit/48f8050c25e40f737dfdd3a98923cb87cd4e77e2).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.69 2020-01-10 Wekan release
+
+This release fixes the following bugs:
+
+- [Fix docker-compose.yml to not use --smallfiles that is not supported in
+  MongoDB 4.x](https://github.com/wekan/wekan/commit/ecb76842fcbd81701afcab8db0ed106e6be0fdec).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.68 2020-01-10 Wekan release
+
+This release tries to fix the following bugs:
+
+- [Try to fix Snap by removing MongoDB option --smallfiles that is not supported
+  in MongoDB 4.x](https://github.com/wekan/wekan/commit/031df54a2e0a03dcb7a2586667e60e5bd4eef706)
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.67 2020-01-10 Wekan release
+
+This release tries to fix the following bugs:
+
+- [Try to fix Snap](https://github.com/wekan/wekan/commit/2b382b940be9af575fab4c2e955702d8cde55ae9).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.66 2020-01-10 Wekan release
+
+This release tries to fix the following bugs:
+
+- [Try to fix Snap](https://github.com/wekan/wekan/commit/39bf1e375e2962f824e6f8cfa425ea51aa4efa24).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.65 2020-01-10 Wekan release
+
+This release adds the following features:
+
+- [More keyboard shortcuts: c for archive card](https://github.com/wekan/wekan/commit/d16a601c04aeb1d3550c5c541be02a67276a34cf).
+  Thanks to xet7.
+
+and adds the following updates:
+
+- [Upgrade to Meteor 1.9, Node 12.14.1 and MongoDB 4.2.2](https://github.com/wekan/wekan/commit/785f3cf88b61f687ef5ad4a529768221d1a54c86).
+  Thanks to xet7.
+- [Add more issue repo links to GitHub issue template](https://github.com/wekan/wekan/commit/5724674e73246f4e52843a6d6906c0ecdd85cccc).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.64 2020-01-06 Wekan release
+
+This release adds the following warning for CentOS 7 users:
+
+- [WARNING: DO NOT USE SNAP ON CENTOS 7, THERE IS UPDATE BUG](https://github.com/wekan/wekan-snap/wiki/CentOS-7).
+  Thanks to andy-twosticks and xet7.
+
+and adds the following features:
+
+- [Wider sidebar](https://github.com/wekan/wekan/commit/5058233509e44916296e38fb8a6c5dd591c46d8b).
+  Thanks to vjrj.
+
+and removes the following features:
+
+- [Removed Custom HTML feature that does not work](https://github.com/wekan/wekan/commit/ddce0ada094e6450be260b4cda21fdfa09ae0133).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.63 2020-01-06 Wekan release
+
+This release fixes the following bugs:
+
+- [Fix: Unable to find Archive Card/List/Swimlane in board
+  settings](https://github.com/wekan/wekan/commit/8ce993921718f3e10c2daa5fabb145b939d789dd).
+  Thanks to neobradley and xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.62 2020-01-05 Wekan release
+
+This release adds the following features:
+
+- [Add Worker role](https://github.com/wekan/wekan/issues/2788).
+  This was originally added at Wekan v3.58, reverted at Wekan v3.60 because of bugs,
+  and now after fixes added back.
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.61 2020-01-03 Wekan release
+
+This release adds the following features:
+
+- [Add more Font Awesome icons. This was originally added
+  at Wekan v3.58, removed at Wekan v3.60, and now
+  added back at Wekan v3.61](https://github.com/wekan/wekan/commit/cd253522a305523e3e36bb73313e8c4db500a717).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Fix browser javascript console errors when editing profile. This was originally added
+  at Wekan v3.58, removed at Wekan v3.60, and now added back at
+  Wekan v3.61](https://github.com/wekan/wekan/commit/cd253522a305523e3e36bb73313e8c4db500a717).
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.60 2020-01-03 Wekan release
+
+This release fixes the following bugs:
+
+- [Revert to Wekan v3.57 version of client and models directories,
+  removing Worker role temporarily, because Worker role changes
+  broke saving card](https://github.com/wekan/wekan/commit/27943796ade78ca3c503637a1340918bf06a1267).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.59 2020-01-03 Wekan release
+
+This release fixes the following bugs:
+
+- [Fix not being able to edit received date](https://github.com/wekan/wekan/commit/5376bc7b7905c0dd99fae1aeae3f63b4583a3e3f).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.58 2020-01-03 Wekan release
+
+This release adds the following features:
+
+- [Add Worker role](https://github.com/wekan/wekan/issues/2788). Thanks to xet7.
+- [Add more Font Awesome icons](https://github.com/wekan/wekan/commit/2bf004120d5a43cd3c3c060fc7c0c30d1b01f220).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Fix: k8s templates update for helm](https://github.com/wekan/wekan/pull/2867).
+  1. Upgrade mongo replica version.
+  2. Access mongo via service url.
+  3. Change the expose servicePort to numeric.
+  Thanks to jiangytcn.
+- [Fix browser console errors when editing user profile name](https://github.com/wekan/wekan/commit/2bf004120d5a43cd3c3c060fc7c0c30d1b01f220).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v3.57 2019-12-22 Wekan release
+
+This release adds the following features:
+
+- [Allow card and checklist API creation for authorized board members](https://github.com/wekan/wekan/pull/2854).
+  Thanks to Robert-Lebedeu.
+- [Visual difference for inactive user in Administration: strikethrough](https://github.com/wekan/wekan/commit/1f1aea87a421ca5e7931d220d10c838574208e2c).
+  Thanks to hever and xet7.
+
+and adds the following updates:
+
+- [Upgrade to Meteor 1.8.3 and Node 8.17.0. Update release scripts. Fix ldap background sync documentation part 2](https://github.com/wekan/wekan/commit/782d0b620988628f40f50f9cd824f6652cfb0dd9).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Fix: Don't add a blank space for empty custom fields on minicards](https://github.com/wekan/wekan/commit/e2a374f0aad8489a84d6de9966c281a812b5eca3).
+  Thanks to roobre and xet7.
+- [Fix: Allow to set empty card title, AssignedBy and RequestedBy](https://github.com/wekan/wekan/commit/25561946edf37351f67cf7500902dde7d9114d2f).
+  Thanks to justinr1234 and xet7.
+- [Fix comment text disappearing when clicking outside of comment text area.
+  Fix lint error](https://github.com/wekan/wekan/commit/3b3950369ce07aa9e6fc4ab1bef9fb8a4993e398).
+  Thanks to xet7.
+- [Fix ldap background sync documentation](https://github.com/wekan/wekan/pull/2855).
+  Thanks to koelle25.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v3.56 2019-11-21 Wekan release
 
 This release adds the following updates:
@@ -105,7 +311,7 @@ This release adds the following new features:
   mode](https://github.com/wekan/wekan/commits/77f8b76d4e13c35ea3451622176bbb69a4d39a32).
   Thanks to whowillcare.
 - Allow user to sort Lists in Board by his own preference boardadmin can star
-  list [1](https://github.com/wekan/wekan/commit/bc2a20f04e32607f8488a9cecd815647fb43e40e), 
+  list [1](https://github.com/wekan/wekan/commit/bc2a20f04e32607f8488a9cecd815647fb43e40e),
   [2](https://github.com/wekan/wekan/commit/bc2a20f04e32607f8488a9cecd815647fb43e40e).
   Thanks to whowillcare.
 - [Allowing user to filter list in Filter function not just cards
@@ -222,7 +428,7 @@ This release adds the following new features:
   NOTIFY_DUE_DAYS_BEFORE_AND_AFTER = 2,0 it means notification will be sent on both due day and two days before.
   Thanks to whowillcare.
 - [Added modifications the help files, related to NOTIFY_DUE_DAYS_BEFORE_AND_AFTER](https://github.com/wekan/wekan/pull/2740).
-  Thanks to whowillcare. 
+  Thanks to whowillcare.
 
 and fixes the following bugs:
 
@@ -273,7 +479,7 @@ This release adds the following new features:
 
 - [More Mobile and Desktop drag handles for Swimlanes/Lists/Cards. Part 1](https://github.com/wekan/wekan/commit/ff550e91103115e7b731dd80c4588b93b2d4c64f).
   Thanks to xet7.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v3.40 2019-09-11 Wekan release
@@ -682,7 +888,7 @@ This release fixes the following bugs:
 
 - [Add missing dependencies back and revert deleting phantomjs](https://github.com/wekan/wekan/commit/32e9aa0ddaf1b015825b8c62ad17ed74b449e4b1).
   Thanks to whowillcare and xet7.
-    
+
 Thanks to above GitHub users for their contributions and translators for their translations.
 
 # v3.09 2019-08-07 Wekan release

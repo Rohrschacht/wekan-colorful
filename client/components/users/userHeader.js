@@ -1,3 +1,6 @@
+import { Cookies } from 'meteor/ostrio:cookies';
+const cookies = new Cookies();
+
 Template.headerUserBar.events({
   'click .js-open-header-member-menu': Popup.open('memberMenu'),
   'click .js-change-avatar': Popup.open('changeAvatar'),
@@ -42,13 +45,31 @@ Template.memberMenuPopup.events({
 
 Template.editProfilePopup.helpers({
   allowEmailChange() {
-    return AccountSettings.findOne('accounts-allowEmailChange').booleanValue;
+    Meteor.call('AccountSettings.allowEmailChange', (_, result) => {
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   },
   allowUserNameChange() {
-    return AccountSettings.findOne('accounts-allowUserNameChange').booleanValue;
+    Meteor.call('AccountSettings.allowUserNameChange', (_, result) => {
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   },
   allowUserDelete() {
-    return AccountSettings.findOne('accounts-allowUserDelete').booleanValue;
+    Meteor.call('AccountSettings.allowUserDelete', (_, result) => {
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   },
 });
 
@@ -177,28 +198,20 @@ Template.changeSettingsPopup.helpers({
     currentUser = Meteor.user();
     if (currentUser) {
       return (currentUser.profile || {}).showDesktopDragHandles;
+    } else if (cookies.has('showDesktopDragHandles')) {
+      return true;
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
-      if (cookies.has('showDesktopDragHandles')) {
-        return true;
-      } else {
-        return false;
-      }
+      return false;
     }
   },
   hiddenSystemMessages() {
     currentUser = Meteor.user();
     if (currentUser) {
       return (currentUser.profile || {}).hasHiddenSystemMessages;
+    } else if (cookies.has('hasHiddenSystemMessages')) {
+      return true;
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
-      if (cookies.has('hasHiddenSystemMessages')) {
-        return true;
-      } else {
-        return false;
-      }
+      return false;
     }
   },
   showCardsCountAt() {
@@ -206,8 +219,6 @@ Template.changeSettingsPopup.helpers({
     if (currentUser) {
       return Meteor.user().getLimitToShowCardsCount();
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
       return cookies.get('limitToShowCardsCount');
     }
   },
@@ -218,28 +229,20 @@ Template.changeSettingsPopup.events({
     currentUser = Meteor.user();
     if (currentUser) {
       Meteor.call('toggleDesktopDragHandles');
+    } else if (cookies.has('showDesktopDragHandles')) {
+      cookies.remove('showDesktopDragHandles');
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
-      if (cookies.has('showDesktopDragHandles')) {
-        cookies.remove('showDesktopDragHandles');
-      } else {
-        cookies.set('showDesktopDragHandles', 'true');
-      }
+      cookies.set('showDesktopDragHandles', 'true');
     }
   },
   'click .js-toggle-system-messages'() {
     currentUser = Meteor.user();
     if (currentUser) {
       Meteor.call('toggleSystemMessages');
+    } else if (cookies.has('hasHiddenSystemMessages')) {
+      cookies.remove('hasHiddenSystemMessages');
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
-      if (cookies.has('hasHiddenSystemMessages')) {
-        cookies.remove('hasHiddenSystemMessages');
-      } else {
-        cookies.set('hasHiddenSystemMessages', 'true');
-      }
+      cookies.set('hasHiddenSystemMessages', 'true');
     }
   },
   'click .js-apply-show-cards-at'(event, templateInstance) {
@@ -253,8 +256,6 @@ Template.changeSettingsPopup.events({
       if (currentUser) {
         Meteor.call('changeLimitToShowCardsCount', minLimit);
       } else {
-        import { Cookies } from 'meteor/ostrio:cookies';
-        const cookies = new Cookies();
         cookies.set('limitToShowCardsCount', minLimit);
       }
       Popup.back();

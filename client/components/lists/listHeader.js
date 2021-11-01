@@ -1,3 +1,5 @@
+import { Cookies } from 'meteor/ostrio:cookies';
+const cookies = new Cookies();
 let listsColors;
 Meteor.startup(() => {
   listsColors = Lists.simpleSchema()._schema.color.allowedValues;
@@ -7,9 +9,10 @@ BlazeComponent.extendComponent({
   canSeeAddCard() {
     const list = Template.currentData();
     return (
-      !list.getWipLimit('enabled')
-      || list.getWipLimit('soft')
-      || !this.reachedWipLimit()
+      (!list.getWipLimit('enabled') ||
+        list.getWipLimit('soft') ||
+        !this.reachedWipLimit()) &&
+      !Meteor.user().isWorker()
     );
   },
 
@@ -66,8 +69,8 @@ BlazeComponent.extendComponent({
   reachedWipLimit() {
     const list = Template.currentData();
     return (
-      list.getWipLimit('enabled')
-      && list.getWipLimit('value') <= list.cards().count()
+      list.getWipLimit('enabled') &&
+      list.getWipLimit('value') <= list.cards().count()
     );
   },
 
@@ -107,14 +110,10 @@ Template.listHeader.helpers({
     currentUser = Meteor.user();
     if (currentUser) {
       return (currentUser.profile || {}).showDesktopDragHandles;
+    } else if (cookies.has('showDesktopDragHandles')) {
+      return true;
     } else {
-      import { Cookies } from 'meteor/ostrio:cookies';
-      const cookies = new Cookies();
-      if (cookies.has('showDesktopDragHandles')) {
-        return true;
-      } else {
-        return false;
-      }
+      return false;
     }
   },
 });
@@ -177,8 +176,8 @@ BlazeComponent.extendComponent({
     const list = Template.currentData();
 
     if (
-      list.getWipLimit('soft')
-      && list.getWipLimit('value') < list.cards().count()
+      list.getWipLimit('soft') &&
+      list.getWipLimit('value') < list.cards().count()
     ) {
       list.setWipLimit(list.cards().count());
     }
@@ -189,8 +188,8 @@ BlazeComponent.extendComponent({
     const list = Template.currentData();
     // Prevent user from using previously stored wipLimit.value if it is less than the current number of cards in the list
     if (
-      !list.getWipLimit('enabled')
-      && list.getWipLimit('value') < list.cards().count()
+      !list.getWipLimit('enabled') &&
+      list.getWipLimit('value') < list.cards().count()
     ) {
       list.setWipLimit(list.cards().count());
     }
