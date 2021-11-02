@@ -30,6 +30,7 @@ Template.boardMenuPopup.events({
   'click .js-outgoing-webhooks': Popup.open('outgoingWebhooks'),
   'click .js-import-board': Popup.open('chooseBoardSource'),
   'click .js-subtask-settings': Popup.open('boardSubtaskSettings'),
+  'click .js-card-settings': Popup.open('boardCardSettings'),
 });
 
 Template.boardMenuPopup.helpers({
@@ -188,10 +189,6 @@ Template.boardChangeViewPopup.events({
   },
   'click .js-open-cal-view'() {
     Utils.setBoardView('board-view-cal');
-    Popup.close();
-  },
-  'click .js-open-rules-view'() {
-    Modal.openWide('rulesMain');
     Popup.close();
   },
 });

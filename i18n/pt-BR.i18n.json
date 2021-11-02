@@ -182,7 +182,7 @@
   "changeLanguagePopup-title": "Alterar Idioma",
   "changePasswordPopup-title": "Alterar Senha",
   "changePermissionsPopup-title": "Alterar Permissões",
-  "changeSettingsPopup-title": "Altera configurações",
+  "changeSettingsPopup-title": "Alterar configurações",
   "subtasks": "Subtarefas",
   "checklists": "Listas de verificação",
   "click-to-star": "Marcar quadro como favorito.",
@@ -583,8 +583,9 @@
   "default": "Padrão",
   "queue": "Fila",
   "subtask-settings": "Configurações de subtarefas",
+  "card-settings": "Configurações do Cartão",
   "boardSubtaskSettingsPopup-title": "Configurações das subtarefas do quadro",
-  "show-subtasks-field": "Cartões podem ter subtarefas",
+  "boardCardSettingsPopup-title": "Configurações do Cartão",
   "deposit-subtasks-board": "Inserir subtarefas a este quadro:",
   "deposit-subtasks-list": "Listas de subtarefas inseridas aqui:",
   "show-parent-in-minicard": "Mostrar Pai do mini cartão:",
@@ -753,5 +754,10 @@
   "hide-minicard-label-text": "Esconder rótulo da etiqueta do mini cartão",
   "show-desktop-drag-handles": "Mostrar alças de arrasto da área de trabalho",
   "assignee": "Administrador",
-  "cardAssigneesPopup-title": "Administrador"
+  "cardAssigneesPopup-title": "Administrador",
+  "addmore-detail": "Adicionar descrição detalhada",
+  "show-on-card": "Mostrar no Cartão",
+  "new": "Novo",
+  "editUserPopup-title": "Editar usuário",
+  "newUserPopup-title": "Novo usuário"
 }

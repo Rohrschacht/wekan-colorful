@@ -583,8 +583,9 @@
   "default": "Privzeto",
   "queue": "Čakalna vrsta",
   "subtask-settings": "Nastavitve podopravil",
+  "card-settings": "Nastavitve kartice",
   "boardSubtaskSettingsPopup-title": "Nastavitve podopravil table",
-  "show-subtasks-field": "Dovoli podopravila na karticah",
+  "boardCardSettingsPopup-title": "Nastavitve kartice",
   "deposit-subtasks-board": "Deponiraj podopravila na tablo:",
   "deposit-subtasks-list": "Ciljni seznam za deponirana podopravila:",
   "show-parent-in-minicard": "Pokaži starša na mini-kartici:",
@@ -753,5 +754,10 @@
   "hide-minicard-label-text": "Skrij besedilo oznak na karticah",
   "show-desktop-drag-handles": "Pokaži ročke za povleko na namizju",
   "assignee": "Dodeljen član",
-  "cardAssigneesPopup-title": "Dodeljen član"
+  "cardAssigneesPopup-title": "Dodeljen član",
+  "addmore-detail": "Dodaj podrobnejši opis",
+  "show-on-card": "Prikaži na kartici",
+  "new": "Novo",
+  "editUserPopup-title": "Uredi uporabnika",
+  "newUserPopup-title": "Nov uporabnik"
 }
