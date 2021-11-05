@@ -1,6 +1,6 @@
 {
   "name": "wekan",
-  "version": "v4.00.0",
+  "version": "v4.23.0",
   "description": "Open-Source kanban",
   "private": true,
   "scripts": {
@@ -51,26 +51,30 @@
     "lint-staged": "^7.3.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.19.1",
-    "prettier-eslint": "^9.0.1"
+    "prettier-eslint": "^9.0.2"
   },
   "dependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/runtime": "^7.9.2",
+    "@babel/core": "^7.9.6",
+    "@babel/runtime": "^7.9.6",
+    "@root/request": "^1.6.1",
     "ajv": "^5.0.0",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^3.0.7",
     "bson": "^4.0.3",
     "bunyan": "^1.8.12",
     "es6-promise": "^4.2.4",
+    "fibers": "^5.0.0",
     "flatted": "^2.0.1",
     "gridfs-stream": "^0.5.3",
+    "jszip": "^3.4.0",
     "ldapjs": "^1.0.2",
-    "meteor-node-stubs": "^0.4.1",
-    "mongodb": "^3.5.0",
+    "meteor-node-stubs": "^1.0.1",
+    "mongodb": "^3.5.7",
     "os": "^0.1.1",
     "page": "^1.11.5",
-    "qs": "^6.9.1",
-    "source-map-support": "^0.5.16",
+    "papaparse": "^5.2.0",
+    "qs": "^6.9.4",
+    "source-map-support": "^0.5.19",
     "xss": "^1.0.6"
   }
 }

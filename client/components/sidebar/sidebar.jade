@@ -230,6 +230,8 @@ template(name="chooseBoardSource")
       a(href="{{pathFor '/import/trello'}}") {{_ 'from-trello'}}
     li
       a(href="{{pathFor '/import/wekan'}}") {{_ 'from-wekan'}}
+    li
+      a(href="{{pathFor '/import/csv'}}") {{_ 'from-csv'}}
 
 template(name="archiveBoardPopup")
   p {{_ 'close-board-pop'}}
@@ -300,7 +302,7 @@ template(name="boardMenuPopup")
       ul.pop-over-list
         if withApi
           li
-            a(href="{{exportUrl}}", download="{{exportFilename}}")
+            a.js-export-board
               i.fa.fa-share-alt
               | {{_ 'export-board'}}
         li
@@ -327,12 +329,10 @@ template(name="boardMenuPopup")
   if isSandstorm
     hr
     ul.pop-over-list
-      if withApi
-        li
-          a(href="{{exportUrl}}", download="{{exportFilename}}")
-            i.fa.fa-share-alt
-            i.fa.fa-sign-out
-            | {{_ 'export-board'}}
+      li
+        a.js-export-board
+          i.fa.fa-share-alt
+          | {{_ 'export-board'}}
       li
         a.js-import-board
           i.fa.fa-share-alt
@@ -359,6 +359,25 @@ template(name="boardMenuPopup")
         a.js-subtask-settings
           i.fa.fa-sitemap
           | {{_ 'subtask-settings'}}
+
+template(name="exportBoard")
+  ul.pop-over-list
+    li
+      a.download-json-link(href="{{exportUrl}}", download="{{exportJsonFilename}}")
+        i.fa.fa-share-alt
+        | {{_ 'export-board-json'}}
+    //li
+    //  a(href="{{exportCsvUrl}}", download="{{exportCsvFilename}}")
+    //    i.fa.fa-share-alt
+    //    | {{_ 'export-board-csv'}}
+    //li
+    //  a(href="{{exportTsvUrl}}", download="{{exportTsvFilename}}")
+    //    i.fa.fa-share-alt
+    //    | {{_ 'export-board-tsv'}}
+    li
+      a.html-export-board
+        i.fa.fa-archive
+        | {{_ 'export-board-html'}}
 
 template(name="labelsWidget")
   .board-widget.board-widget-labels

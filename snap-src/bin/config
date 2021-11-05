@@ -96,6 +96,8 @@ DESCRIPTION_ATTACHMENTS_STORE_PATH="Allow wekan ower to specify where uploaded f
 DEFAULT_ATTACHMENTS_STORE_PATH=""
 KEY_ATTACHMENTS_STORE_PATH="attachments-store-path"
 
+# Example, not in use: /var/snap/wekan/common/uploads/
+
 DESCRIPTION_MAX_IMAGE_PIXEL="Max image pixel: Allow to shrink attached/pasted image https://github.com/wekan/wekan/pull/2544"
 DEFAULT_MAX_IMAGE_PIXEL=""
 KEY_MAX_IMAGE_PIXEL="max-image-pixel"
