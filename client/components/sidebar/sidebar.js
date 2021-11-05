@@ -215,7 +215,17 @@ Template.boardMenuPopup.events({
   'click .js-card-settings': Popup.open('boardCardSettings'),
 });
 
+Template.boardMenuPopup.onCreated(function() {
+  this.apiEnabled = new ReactiveVar(false);
+  Meteor.call('_isApiEnabled', (e, result) => {
+    this.apiEnabled.set(result);
+  });
+});
+
 Template.boardMenuPopup.helpers({
+  withApi() {
+    return Template.instance().apiEnabled.get();
+  },
   exportUrl() {
     const params = {
       boardId: Session.get('currentBoard'),
@@ -499,7 +509,7 @@ BlazeComponent.extendComponent({
         'members.userId': Meteor.userId(),
       },
       {
-        sort: ['title'],
+        sort: { sort: 1 /* boards default sorting */ },
       },
     );
   },
@@ -677,7 +687,7 @@ BlazeComponent.extendComponent({
         'members.userId': Meteor.userId(),
       },
       {
-        sort: ['title'],
+        sort: { sort: 1 /* boards default sorting */ },
       },
     );
   },

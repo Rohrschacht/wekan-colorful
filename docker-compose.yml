@@ -38,7 +38,7 @@ version: '2'
 #      sudo service docker start
 # ----------------------------------------------------------------------------------
 # ==== USAGE OF THIS docker-compose.yml ====
-# 1) For seeing does Wekan work, try this and check with your webbroser:
+# 1) For seeing does Wekan work, try this and check with your web browser:
 #      docker-compose up
 # 2) Stop Wekan and start Wekan in background:
 #     docker-compose stop
@@ -254,6 +254,11 @@ services:
       # https://github.com/wekan/wekan/pull/2544
       #-MAX_IMAGE_PIXEL=1024
       #-IMAGE_COMPRESS_RATIO=80
+      #---------------------------------------------------------------
+      # ==== NOTIFICATION TRAY AFTER READ DAYS BEFORE REMOVE =====
+      # Number of days after a notification is read before we remove it.
+      # Default: 2
+      #- NOTIFICATION_TRAY_AFTER_READ_DAYS_BEFORE_REMOVE=2
       #---------------------------------------------------------------
       # ==== BIGEVENTS DUE ETC NOTIFICATIONS =====
       # https://github.com/wekan/wekan/pull/2541
@@ -593,6 +598,9 @@ services:
       # LOGOUT_ON_MINUTES : The number of minutes
       # example : LOGOUT_ON_MINUTES=55
       #- LOGOUT_ON_MINUTES=
+      #-------------------------------------------------------------------
+      # Hide password login form 
+      # - PASSWORD_LOGIN_ENABLED=true
       #-------------------------------------------------------------------
     depends_on:
       - wekandb

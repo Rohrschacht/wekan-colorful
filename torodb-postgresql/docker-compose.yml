@@ -244,6 +244,11 @@ services:
       #-MAX_IMAGE_PIXEL=1024
       #-IMAGE_COMPRESS_RATIO=80
       #---------------------------------------------------------------
+      # ==== NOTIFICATION TRAY AFTER READ DAYS BEFORE REMOVE =====
+      # Number of days after a notification is read before we remove it.
+      # Default: 2
+      #- NOTIFICATION_TRAY_AFTER_READ_DAYS_BEFORE_REMOVE=2
+      #---------------------------------------------------------------
       # ==== BIGEVENTS DUE ETC NOTIFICATIONS =====
       # https://github.com/wekan/wekan/pull/2541
       # Introduced a system env var BIGEVENTS_PATTERN default as "NONE",
@@ -522,7 +527,12 @@ services:
       # LOGOUT_ON_MINUTES : The number of minutes
       # example : LOGOUT_ON_MINUTES=55
       #- LOGOUT_ON_MINUTES=
+      #---------------------------------------------------------------------
+      # PASSWORD_LOGIN_ENABLED : Enable or not the password login form. 
+      # example: PASSWORD_LOGIN_ENABLED=false
+      # - PASSWORD_LOGIN_ENABLED
       #-------------------------------------------------------------------
+      
 
     depends_on:
       - mongodb

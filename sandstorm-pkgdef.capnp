@@ -22,10 +22,10 @@ const pkgdef :Spk.PackageDefinition = (
     appTitle = (defaultText = "Wekan"),
     # The name of the app as it is displayed to the user.
 
-    appVersion = 387,
+    appVersion = 400,
     # Increment this for every release.
 
-    appMarketingVersion = (defaultText = "3.87.0~2020-04-01"),
+    appMarketingVersion = (defaultText = "4.00.0~2020-04-27"),
     # Human-readable presentation of the app version.
 
     minUpgradableAppVersion = 0,
@@ -242,6 +242,7 @@ const myCommand :Spk.Manifest.Command = (
     (key = "SCROLLINERTIA", value="0"),
     (key = "SCROLLAMOUNT", value="auto"),
     (key = "CARD_OPENED_WEBHOOK_ENABLED", value="false"),
+    (key = "NOTIFICATION_TRAY_AFTER_READ_DAYS_BEFORE_REMOVE", value=""),
     (key = "BIGEVENTS_PATTERN", value="NONE"),
     (key = "MATOMO_ADDRESS", value=""),
     (key = "MATOMO_SITE_ID", value=""),
@@ -258,6 +259,7 @@ const myCommand :Spk.Manifest.Command = (
     (key = "OAUTH2_USERINFO_ENDPOINT", value=""),
     (key = "OAUTH2_TOKEN_ENDPOINT", value=""),
     (key = "LDAP_ENABLE", value="false"),
+    (key = "PASSWORD_LOGIN_ENABLED", value="true"),
     (key = "SANDSTORM", value="1"),
     (key = "METEOR_SETTINGS", value = "{\"public\": {\"sandstorm\": true}}")
   ]
