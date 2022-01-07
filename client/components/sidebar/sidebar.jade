@@ -9,7 +9,7 @@ template(name="sidebar")
         a.board-header-btn.js-shortcuts
           i.fa.fa-keyboard-o
           span {{_ 'keyboard-shortcuts' }}
-      .sidebar-content.js-board-sidebar-content.js-perfect-scrollbar
+      .sidebar-content.js-board-sidebar-content
         //a.hide-btn.js-hide-sidebar
         //  i.fa.fa-navicon
         unless isDefaultView
@@ -366,14 +366,14 @@ template(name="exportBoard")
       a.download-json-link(href="{{exportUrl}}", download="{{exportJsonFilename}}")
         i.fa.fa-share-alt
         | {{_ 'export-board-json'}}
-    //li
-    //  a(href="{{exportCsvUrl}}", download="{{exportCsvFilename}}")
-    //    i.fa.fa-share-alt
-    //    | {{_ 'export-board-csv'}}
-    //li
-    //  a(href="{{exportTsvUrl}}", download="{{exportTsvFilename}}")
-    //    i.fa.fa-share-alt
-    //    | {{_ 'export-board-tsv'}}
+    li
+      a(href="{{exportCsvUrl}}", download="{{exportCsvFilename}}")
+        i.fa.fa-share-alt
+        | {{_ 'export-board-csv'}}
+    li
+      a(href="{{exportTsvUrl}}", download="{{exportTsvFilename}}")
+        i.fa.fa-share-alt
+        | {{_ 'export-board-tsv'}}
     li
       a.html-export-board
         i.fa.fa-archive

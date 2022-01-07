@@ -8,7 +8,7 @@ Meteor.startup(() => {
 
 BlazeComponent.extendComponent({
   mixins() {
-    return [Mixins.InfiniteScrolling, Mixins.PerfectScrollbar];
+    return [Mixins.InfiniteScrolling];
   },
 
   calculateNextPeak() {
@@ -57,7 +57,7 @@ BlazeComponent.extendComponent({
   },
 
   scrollParentContainer() {
-    const cardPanelWidth = 510;
+    const cardPanelWidth = 600;
     const parentComponent = this.parentComponent();
     // TODO sometimes parentComponent is not available, maybe because it's not
     // yet created?!
@@ -171,13 +171,6 @@ BlazeComponent.extendComponent({
 
     if (!Utils.isMiniScreen()) {
       Meteor.setTimeout(() => {
-        $('.card-details').mCustomScrollbar({
-          theme: 'minimal-dark',
-          setWidth: false,
-          setLeft: 0,
-          scrollbarPosition: 'outside',
-          mouseWheel: true,
-        });
         this.scrollParentContainer();
       }, 500);
     }
@@ -257,12 +250,15 @@ BlazeComponent.extendComponent({
 
     // Disable sorting if the current user is not a board member
     this.autorun(() => {
-      const disabled = !userIsMember() || Utils.isMiniScreen();
+      const disabled = !userIsMember();
       if (
         $checklistsDom.data('uiSortable') ||
         $checklistsDom.data('sortable')
       ) {
         $checklistsDom.sortable('option', 'disabled', disabled);
+        if (Utils.isMiniScreenOrShowDesktopDragHandles()) {
+          $checklistsDom.sortable({ handle: '.checklist-handle'});
+        }
       }
       if ($subtasksDom.data('uiSortable') || $subtasksDom.data('sortable')) {
         $subtasksDom.sortable('option', 'disabled', disabled);
@@ -675,7 +671,11 @@ Template.moveCardPopup.events({
     // instead from a “component” state.
     const card = Cards.findOne(Session.get('currentCard'));
     const bSelect = $('.js-select-boards')[0];
-    const boardId = bSelect.options[bSelect.selectedIndex].value;
+    let boardId;
+    // if we are a worker, we won't have a board select so we just use the
+    // current boardId of the card.
+    if (bSelect) boardId = bSelect.options[bSelect.selectedIndex].value;
+    else boardId = card.boardId;
     const lSelect = $('.js-select-lists')[0];
     const listId = lSelect.options[lSelect.selectedIndex].value;
     const slSelect = $('.js-select-swimlanes')[0];
