@@ -9,15 +9,16 @@ version: '2'
 # https://github.com/wekan/wekan/wiki/Forgot-Password
 #---------------------------------------------------------------------------------------------------------
 # ==== Upgrading Wekan to new version =====
+# NOTE: MongoDB has changed from 3.x to 4.x, in that case you need backup/restore with --noIndexRestore
+#       see https://github.com/wekan/wekan/wiki/Backup
 # 1) Stop Wekan:
 #      docker-compose stop
-# 2) Download new version:
-#      docker-compose pull wekan
-# 3) If you have more networks for VPN etc as described at bottom of
-#    this config, download for them too:
-#      docker-compose pull wekan2
+# 2) Remove old Wekan app (wekan-app only, not that wekan-db container that has all your data)
+#      docker rm wekan-app
+# 3) Get newest docker-compose.yml from https://github.com/wekan/wekan to have correct image,
+#    for example: "image: quay.io/wekan/wekan" or version tag "image: quay.io/wekan/wekan:v4.52"
 # 4) Start Wekan:
-#      docker-compose start
+#      docker-compose up -d
 #----------------------------------------------------------------------------------
 # ==== OPTIONAL: DEDICATED DOCKER USER ====
 # 1) Optionally create a dedicated user for Wekan, for example:
@@ -84,10 +85,14 @@ version: '2'
 #      # 11) Start wekan
 #             docker start wekan-app
 #-------------------------------------------------------------------------
+# 2020-12-03:
+# - base images copied from Docker Hub to Quay to avoid Docker Hub rate limits,
+#   from: torodb/stampede:1.0.0, postgres:9.6, mongo:3.2
+#-------------------------------------------------------------------------
 
 services:
   torodb-stampede:
-    image: torodb/stampede:latest
+    image: quay.io/wekan/torodb-stampede:1.0.0
     networks:
       - wekan-tier
     links:
@@ -104,7 +109,7 @@ services:
       - TORODB_BACKEND_PASSWORD=wekan
       - DEBUG
   postgres:
-    image: postgres:9.6
+    image: quay.io/wekan/postgres:9.6
     networks:
       - wekan-tier
     environment:
@@ -132,7 +137,7 @@ services:
         ' 1>/dev/null 2>&1 &
         mongod --replSet rs1
   wekan:
-    image: wekanteam/wekan
+    image: quay.io/wekan/wekan
     container_name: wekan-app
     restart: always
     networks:
