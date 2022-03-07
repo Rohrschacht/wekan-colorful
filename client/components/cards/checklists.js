@@ -59,7 +59,6 @@ BlazeComponent.extendComponent({
         if (Utils.isMiniScreenOrShowDesktopDragHandles()) {
           $(self.itemsDom).sortable({
             handle: 'span.fa.checklistitem-handle',
-            appendTo: 'parent',
           });
         }
       }
@@ -222,6 +221,14 @@ Template.checklists.helpers({
     if (currentUser) return currentUser.hasHideCheckedItems();
     return false;
   },
+});
+
+Template.addChecklistItemForm.onRendered(() => {
+  autosize($('textarea.js-add-checklist-item'));
+});
+
+Template.editChecklistItemForm.onRendered(() => {
+  autosize($('textarea.js-edit-checklist-item'));
 });
 
 Template.checklistDeleteDialog.onCreated(() => {
