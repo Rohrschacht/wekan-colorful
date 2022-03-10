@@ -1,3 +1,84 @@
+# v4.81 2021-01-18 Wekan release
+
+This release adds the following new features:
+
+- [Global Search: Use translated color names](https://github.com/wekan/wekan/pull/3440).
+  Thanks to jrsupplee and xet7.
+
+and fixes the following bugs:
+
+- [Restore original working Dockerfile](https://github.com/wekan/wekan/commit/c4ea7457dcf1db200c87784c35b7d3c390e94d80).
+  Thanks to gpalyu and xet7.
+- [Reverted Cards, custom fields are displayed in alphabetic order from Wekan v4.71
+  https://github.com/wekan/wekan/pulls/3417 because it caused board not
+  loading](https://github.com/wekan/wekan/commit/413f91d0c8f2d3f9df9bf036bb20551dba29bc2e).
+  Thanks to olivierlambert and xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v4.80 2021-01-18 Wekan release
+
+This release adds the following improvements:
+
+- [Global Search fixes and updates](https://github.com/wekan/wekan/pulls/3437).
+  Thanks to jrsupplee.
+- [Use table-cell instead of inline-block in my-cards-list-wrapper CSS](https://github.com/wekan/wekan/commit/3866ed31965eb5b722e88c4d3e7628d516375088).
+  Thanks to johappel and xet7.
+- [Use multi stage build based on Node images](https://github.com/wekan/wekan/pull/3438).
+  Thanks to GavinLilly.
+- [Try to use buster base images, because when using Wekan Alpine, registering new user of Wekan does not work,
+  maybe because of glibc/musl](https://github.com/wekan/wekan/commit/254a9abad2dec620d95c02ac9209e9f569407986).
+  Thanks to GavinLilly and xet7.
+- [Use MongoDB setFeatureCompatibilityVersion 4.2 on Snap. TODO: Docker](https://github.com/wekan/wekan/commit/2791b7da22ddb0ff5588eca56f1dc90ff5ffdd2d).
+  Thanks to GuidoDr and xet7.
+
+and adds the following updates:
+
+- [Update dependencies](https://github.com/wekan/wekan/commit/c0f748bcb5dfebe7fa90be647a1ed23f0edcc304).
+  Thanks to developers of dependencies.
+
+and fixes the following bugs:
+
+- [Fixed Linked card makes board not load when CustomField definition is undefined](https://github.com/wekan/wekan/commit/0d5f33299ee25e1bee4ca4fc3b3c2483c29e367c).
+  Thanks to olivierlambert and xet7.
+    
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v4.79 2021-01-17 Wekan release
+
+This release adds the following new features:
+
+- [At Search All Cards, now it's possible to click found card to open it](https://github.com/wekan/wekan/commit/10f74f5152117358e9c6b9bb0e81b8c284841aff).
+  Thanks to xet7.
+
+and fixes the following bugs:
+
+- [Fixed: Linked card makes board not load](https://github.com/wekan/wekan/commit/be03d2ae9aa708119992548145cbaf82e1f87419).
+  Thanks to akitzing, galletl, pdonias, olivierlambert and xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v4.78 2021-01-16 Wekan release
+
+This release adds the following new features:
+
+- [Search All Boards](https://github.com/wekan/wekan/pull/3433). Currently limited to 50 results. Will be improved later.
+  Thanks to jrsuplee and xet7.
+
+and fixes the following bugs:
+
+- [HTML is not needed in Rules translations, so disabled it](https://github.com/wekan/wekan/commit/a2894bf0cb11161f2f9382e900ffbae2a1570d38).
+  Thanks to jrsuplee and xet7.
+- [Limit amount of data in publications where possible](https://github.com/wekan/wekan/commit/4115d62bac882ceaaec531b1f9df2666097be51a).
+  Thanks to xet7.
+- [Fixed Display issues with assignee on minicard](https://github.com/wekan/wekan/commit/aa34da61fe80a2ab2a87b6413b3b9c25fb8ea96f).
+  Thanks to bronger and xet7.
+- [Limit visibility of Global Search, My Cards and Due Cards to logged in users, because they do not work without
+  logging in](https://github.com/wekan/wekan/commit/4180224fd9841a3e6cab9eacb1447978482e1e91).
+  Thanks to xet7.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v4.77 2021-01-13 Wekan release
 
 This release adds the following new features:

@@ -311,6 +311,33 @@ Users.attachSchema(
       optional: false,
       defaultValue: 'password',
     },
+    sessionData: {
+      /**
+       * profile settings
+       */
+      type: Object,
+      optional: true,
+      // eslint-disable-next-line consistent-return
+      autoValue() {
+        if (this.isInsert && !this.isSet) {
+          return {};
+        }
+      },
+    },
+    'sessionData.totalHits': {
+      /**
+       * Total hits from last search
+       */
+      type: Number,
+      optional: true,
+    },
+    'sessionData.lastHit': {
+      /**
+       * last hit that was returned
+       */
+      type: Number,
+      optional: true,
+    },
   }),
 );
 
@@ -349,6 +376,14 @@ Users.initEasySearch(searchInFields, {
   use: 'mongo-db',
   returnFields: [...searchInFields, 'profile.avatarUrl'],
 });
+
+Users.safeFields = {
+  _id: 1,
+  username: 1,
+  'profile.fullname': 1,
+  'profile.avatarUrl': 1,
+  'profile.initials': 1,
+};
 
 if (Meteor.isClient) {
   Users.helpers({

@@ -689,7 +689,7 @@ Cards.helpers({
 
     // match right definition to each field
     if (!this.customFields) return [];
-    const ret = this.customFields.map(customField => {
+    return this.customFields.map(customField => {
       const definition = definitions.find(definition => {
         return definition._id === customField._id;
       });
@@ -715,8 +715,6 @@ Cards.helpers({
         definition,
       };
     });
-    ret.sort((a, b) => a.definition.name.localeCompare(b.definition.name));
-    return ret;
   },
 
   colorClass() {
@@ -858,12 +856,20 @@ Cards.helpers({
   getMembers() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.members;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.members;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.activeMembers().map(member => {
-        return member.userId;
-      });
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.activeMembers().map(member => {
+          return member.userId;
+        });
+      }
     } else {
       return this.members;
     }
@@ -872,12 +878,20 @@ Cards.helpers({
   getAssignees() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.assignees;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.assignees;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.activeMembers().map(assignee => {
-        return assignee.userId;
-      });
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.activeMembers().map(assignee => {
+          return assignee.userId;
+        });
+      }
     } else {
       return this.assignees;
     }
@@ -967,7 +981,11 @@ Cards.helpers({
   getReceived() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.receivedAt;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.receivedAt;
+      }
     } else {
       return this.receivedAt;
     }
@@ -984,10 +1002,18 @@ Cards.helpers({
   getStart() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.startAt;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.startAt;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.startAt;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.startAt;
+      }
     } else {
       return this.startAt;
     }
@@ -1006,10 +1032,18 @@ Cards.helpers({
   getDue() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.dueAt;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.dueAt;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.dueAt;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.dueAt;
+      }
     } else {
       return this.dueAt;
     }
@@ -1028,10 +1062,18 @@ Cards.helpers({
   getEnd() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.endAt;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.endAt;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.endAt;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.endAt;
+      }
     } else {
       return this.endAt;
     }
@@ -1050,10 +1092,18 @@ Cards.helpers({
   getIsOvertime() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.isOvertime;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.isOvertime;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.isOvertime;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.isOvertime;
+      }
     } else {
       return this.isOvertime;
     }
@@ -1072,10 +1122,18 @@ Cards.helpers({
   getSpentTime() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.spentTime;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.spentTime;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.spentTime;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.spentTime;
+      }
     } else {
       return this.spentTime;
     }
@@ -1094,12 +1152,22 @@ Cards.helpers({
   getVoteQuestion() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      if (card && card.vote) return card.vote.question;
-      else return null;
+      if (card === undefined) {
+        return null;
+      } else if (card && card.vote) {
+        return card.vote.question;
+      } else {
+        return null;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      if (board && board.vote) return board.vote.question;
-      else return null;
+      if (board === undefined) {
+        return null;
+      } else if (board && board.vote) {
+        return board.vote.question;
+      } else {
+        return null;
+      }
     } else if (this.vote) {
       return this.vote.question;
     } else {
@@ -1110,12 +1178,22 @@ Cards.helpers({
   getVotePublic() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      if (card && card.vote) return card.vote.public;
-      else return null;
+      if (card === undefined) {
+        return null;
+      } else if (card && card.vote) {
+        return card.vote.public;
+      } else {
+        return null;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      if (board && board.vote) return board.vote.public;
-      else return null;
+      if (board === undefined) {
+        return null;
+      } else if (board && board.vote) {
+        return board.vote.public;
+      } else {
+        return null;
+      }
     } else if (this.vote) {
       return this.vote.public;
     } else {
@@ -1126,12 +1204,22 @@ Cards.helpers({
   getVoteEnd() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      if (card && card.vote) return card.vote.end;
-      else return null;
+      if (card === undefined) {
+        return null;
+      } else if (card && card.vote) {
+        return card.vote.end;
+      } else {
+        return null;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      if (board && board.vote) return board.vote.end;
-      else return null;
+      if (board === undefined) {
+        return null;
+      } else if (board && board.vote) {
+        return board.vote.end;
+      } else {
+        return null;
+      }
     } else if (this.vote) {
       return this.vote.end;
     } else {
@@ -1184,10 +1272,20 @@ Cards.helpers({
   getTitle() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.title;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.title;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.title;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.title;
+      }
+    } else if (this.title === undefined) {
+      return null;
     } else {
       return this.title;
     }
@@ -1196,14 +1294,29 @@ Cards.helpers({
   getBoardTitle() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
+      if (card === undefined) {
+        return null;
+      }
       const board = Boards.findOne({ _id: card.boardId });
-      return board.title;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.title;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.title;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.title;
+      }
     } else {
       const board = Boards.findOne({ _id: this.boardId });
-      return board.title;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.title;
+      }
     }
   },
 
@@ -1220,10 +1333,18 @@ Cards.helpers({
   getArchived() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.archived;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.archived;
+      }
     } else if (this.isLinkedBoard()) {
       const board = Boards.findOne({ _id: this.linkedId });
-      return board.archived;
+      if (board === undefined) {
+        return null;
+      } else {
+        return board.archived;
+      }
     } else {
       return this.archived;
     }
@@ -1240,7 +1361,11 @@ Cards.helpers({
   getRequestedBy() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.requestedBy;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.requestedBy;
+      }
     } else {
       return this.requestedBy;
     }
@@ -1257,7 +1382,11 @@ Cards.helpers({
   getAssignedBy() {
     if (this.isLinkedCard()) {
       const card = Cards.findOne({ _id: this.linkedId });
-      return card.assignedBy;
+      if (card === undefined) {
+        return null;
+      } else {
+        return card.assignedBy;
+      }
     } else {
       return this.assignedBy;
     }
@@ -1729,6 +1858,248 @@ Cards.mutations({
     }
   },
 });
+
+Cards.globalSearch = queryParams => {
+  const userId = Meteor.userId();
+  // eslint-disable-next-line no-console
+  // console.log('userId:', userId);
+
+  const errors = new (class {
+    constructor() {
+      this.notFound = {
+        boards: [],
+        swimlanes: [],
+        lists: [],
+        labels: [],
+        users: [],
+        members: [],
+        assignees: [],
+        is: [],
+      };
+    }
+
+    hasErrors() {
+      for (const prop in this.notFound) {
+        if (this.notFound[prop].length) {
+          return true;
+        }
+      }
+      return false;
+    }
+  })();
+
+  const selector = {
+    archived: false,
+    type: 'cardType-card',
+    boardId: { $in: Boards.userBoardIds(userId) },
+    swimlaneId: { $nin: Swimlanes.archivedSwimlaneIds() },
+    listId: { $nin: Lists.archivedListIds() },
+  };
+
+  if (queryParams.boards.length) {
+    const queryBoards = [];
+    queryParams.boards.forEach(query => {
+      const boards = Boards.userSearch(userId, {
+        title: new RegExp(query, 'i'),
+      });
+      if (boards.count()) {
+        boards.forEach(board => {
+          queryBoards.push(board._id);
+        });
+      } else {
+        errors.notFound.boards.push(query);
+      }
+    });
+
+    selector.boardId.$in = queryBoards;
+  }
+
+  if (queryParams.swimlanes.length) {
+    const querySwimlanes = [];
+    queryParams.swimlanes.forEach(query => {
+      const swimlanes = Swimlanes.find({
+        title: new RegExp(query, 'i'),
+      });
+      if (swimlanes.count()) {
+        swimlanes.forEach(swim => {
+          querySwimlanes.push(swim._id);
+        });
+      } else {
+        errors.notFound.swimlanes.push(query);
+      }
+    });
+
+    selector.swimlaneId.$in = querySwimlanes;
+  }
+
+  if (queryParams.lists.length) {
+    const queryLists = [];
+    queryParams.lists.forEach(query => {
+      const lists = Lists.find({
+        title: new RegExp(query, 'i'),
+      });
+      if (lists.count()) {
+        lists.forEach(list => {
+          queryLists.push(list._id);
+        });
+      } else {
+        errors.notFound.lists.push(query);
+      }
+    });
+
+    selector.listId.$in = queryLists;
+  }
+
+  const queryMembers = [];
+  const queryAssignees = [];
+  if (queryParams.users.length) {
+    queryParams.users.forEach(query => {
+      const users = Users.find({
+        username: query,
+      });
+      if (users.count()) {
+        users.forEach(user => {
+          queryMembers.push(user._id);
+          queryAssignees.push(user._id);
+        });
+      } else {
+        errors.notFound.users.push(query);
+      }
+    });
+  }
+
+  if (queryParams.members.length) {
+    queryParams.members.forEach(query => {
+      const users = Users.find({
+        username: query,
+      });
+      if (users.count()) {
+        users.forEach(user => {
+          queryMembers.push(user._id);
+        });
+      } else {
+        errors.notFound.members.push(query);
+      }
+    });
+  }
+
+  if (queryParams.assignees.length) {
+    queryParams.assignees.forEach(query => {
+      const users = Users.find({
+        username: query,
+      });
+      if (users.count()) {
+        users.forEach(user => {
+          queryAssignees.push(user._id);
+        });
+      } else {
+        errors.notFound.assignees.push(query);
+      }
+    });
+  }
+
+  if (queryMembers.length && queryAssignees.length) {
+    selector.$or = [
+      { members: { $in: queryMembers } },
+      { assignees: { $in: queryAssignees } },
+    ];
+  } else if (queryMembers.length) {
+    selector.members = { $in: queryMembers };
+  } else if (queryAssignees.length) {
+    selector.assignees = { $in: queryAssignees };
+  }
+
+  if (queryParams.labels.length) {
+    queryParams.labels.forEach(label => {
+      const queryLabels = [];
+
+      let boards = Boards.userSearch(userId, {
+        labels: { $elemMatch: { color: label.toLowerCase() } },
+      });
+
+      if (boards.count()) {
+        boards.forEach(board => {
+          // eslint-disable-next-line no-console
+          // console.log('board:', board);
+          // eslint-disable-next-line no-console
+          // console.log('board.labels:', board.labels);
+          board.labels
+            .filter(boardLabel => {
+              return boardLabel.color === label.toLowerCase();
+            })
+            .forEach(boardLabel => {
+              queryLabels.push(boardLabel._id);
+            });
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        // console.log('label:', label);
+        const reLabel = new RegExp(label, 'i');
+        // eslint-disable-next-line no-console
+        // console.log('reLabel:', reLabel);
+        boards = Boards.userSearch(userId, {
+          labels: { $elemMatch: { name: reLabel } },
+        });
+
+        if (boards.count()) {
+          boards.forEach(board => {
+            board.labels
+              .filter(boardLabel => {
+                return boardLabel.name.match(reLabel);
+              })
+              .forEach(boardLabel => {
+                queryLabels.push(boardLabel._id);
+              });
+          });
+        } else {
+          errors.notFound.labels.push(label);
+        }
+      }
+
+      selector.labelIds = { $in: queryLabels };
+    });
+  }
+
+  if (errors.hasErrors()) {
+    return { cards: null, errors };
+  }
+
+  if (queryParams.text) {
+    const regex = new RegExp(queryParams.text, 'i');
+
+    selector.$or = [
+      { title: regex },
+      { description: regex },
+      { customFields: { $elemMatch: { value: regex } } },
+    ];
+  }
+
+  // eslint-disable-next-line no-console
+  // console.log('selector:', selector);
+  const cards = Cards.find(selector, {
+    fields: {
+      _id: 1,
+      archived: 1,
+      boardId: 1,
+      swimlaneId: 1,
+      listId: 1,
+      title: 1,
+      type: 1,
+      sort: 1,
+      members: 1,
+      assignees: 1,
+      colors: 1,
+      dueAt: 1,
+      labelIds: 1,
+    },
+    limit: 50,
+  });
+
+  // eslint-disable-next-line no-console
+  // console.log('count:', cards.count());
+
+  return { cards, errors };
+};
 
 //FUNCTIONS FOR creation of Activities
 

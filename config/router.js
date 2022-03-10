@@ -149,6 +149,30 @@ FlowRouter.route('/due-cards', {
   },
 });
 
+FlowRouter.route('/global-search', {
+  name: 'global-search',
+  action() {
+    Filter.reset();
+    // EscapeActions.executeAll();
+    EscapeActions.executeUpTo('popup-close');
+
+    Utils.manageCustomUI();
+    Utils.manageMatomo();
+    DocHead.setTitle(TAPi18n.__('globalSearch-title'));
+
+    if (FlowRouter.getQueryParam('q')) {
+      Session.set(
+        'globalQuery',
+        decodeURIComponent(FlowRouter.getQueryParam('q')),
+      );
+    }
+    BlazeLayout.render('defaultLayout', {
+      headerBar: 'globalSearchHeaderBar',
+      content: 'globalSearch',
+    });
+  },
+});
+
 FlowRouter.route('/broken-cards', {
   name: 'broken-cards',
   action() {
@@ -165,7 +189,6 @@ FlowRouter.route('/broken-cards', {
       headerBar: 'brokenCardsHeaderBar',
       content: brokenCardsTemplate,
     });
-    // }
   },
 });
 
