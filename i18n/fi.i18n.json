@@ -601,7 +601,8 @@
   "minutes": "minuuttia",
   "seconds": "sekuntia",
   "show-field-on-card": "Näytä tämä kenttä kortilla",
-  "automatically-field-on-card": "Luo kenttä automaattisesti kaikille korteille",
+  "automatically-field-on-card": "Lisää kenttä uusille korteille",
+  "always-field-on-card": "Lisää kenttä kaikille korteille",
   "showLabel-field-on-card": "Näytä kentän nimilappu minikortilla",
   "yes": "Kyllä",
   "no": "Ei",
@@ -894,7 +895,11 @@
   "operator-assignee": "käsittelijä",
   "operator-assignee-abbrev": "a",
   "operator-is": "on",
+  "operator-due": "erääntyy",
+  "operator-created": "luotu",
+  "operator-modified": "muokattu",
   "operator-unknown-error": "%s ei ole operaattori",
+  "operator-number-expected": "operaattori __operator__ odotettiin numeroa, saatiin '__value__'",
   "heading-notes": "Huomioitavaa",
   "globalSearch-instructions-heading": "Etsintäohjeet",
   "globalSearch-instructions-description": "Etsinnät voi sisältää operaattoreita tarkentamaan hakua.  Operaattorit määritellään kirjoittamalla operaattorin nimi ja arvo eroteltuna kaksoispisteellä. Esimerkiksi, operaattori määritelmä `lista:Blokattu` rajoittaisi etsinnät kortteihin listassa nimeltä *Blokattu*.  Jos arvo sisältää välilyöntejä tai erityismerkkejä sen on oltava lainausmerkeissä (esim. `__operator_list__:\"Tarkista nämä\"`).",
@@ -915,5 +920,7 @@
   "globalSearch-instructions-notes-5": "Arkistoiduista korteista ei etsitä.",
   "link-to-search": "Linkki tähän hakuun",
   "excel-font": "Arial",
-  "number": "Numero"
+  "number": "Numero",
+  "label-colors": "Nimilappujen värit",
+  "label-names": "Nimilappujen nimet"
 }

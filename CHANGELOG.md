@@ -1,3 +1,65 @@
+# v4.85 2021-01-23 Wekan release
+
+This release adds the following new features:
+
+- [Option to add custom field to all cards](https://github.com/wekan/wekan/pulls/3466).
+  Thanks to jrsupplee.
+- [Added checkbox as an option to custom field create dialog](https://github.com/wekan/wekan/pull/3472).
+  Thanks to jrsupplee.
+
+and adds the following improvements:
+
+- [Display My Cards lists using inline-grid](https://github.com/wekan/wekan/pull/3474).
+  Thanks to jrsupplee.
+- [Added board title link and background color to My Cards](https://github.com/wekan/wekan/pull/3471).
+  Thanks to helioguardabaxo.
+- [Use simple border at My Cards](https://github.com/wekan/wekan/pull/3475).
+  Thanks to helioguardabaxo.
+
+and adds the following updates:
+
+- Updated dependencies.
+  [Part 1](https://github.com/wekan/wekan/commit/7a66cb46a0ec334f4e95a73322641ba029f770ad),
+  [Part 2](https://github.com/wekan/wekan/commit/953cfd6ecd291196ce2ad1d4a5eac19ca21a20d9).
+  Thanks to developers of dependencies.
+
+and fixes the following bugs:
+
+- [WIP Limit: Limited number of cards highlighting to true overbooking](https://github.com/wekan/wekan/pull/3468).
+  Thanks to bronger.
+- [Revert table-cell back to inline-block at my-cards-list-wrapper](https://github.com/wekan/wekan/commit/da12c84609674bdf5121ad6b74c97c65b9fc0164).
+  Thanks to jrsupplee and xet7.
+- [Fix for search operators with uppercase letters](https://github.com/wekan/wekan/pull/3470).
+  Thanks to jrsupplee.
+- [Boards.copyTitle - escape string used in regex](https://github.com/wekan/wekan/pull/3473).
+  Thanks to jrsupplee.
+- [Bug fix: import regex escape function](https://github.com/wekan/wekan/pull/3476).
+  Thanks to jrsupplee.
+
+Thanks to above GitHub users for their contributions and translators for their translations.
+
+# v4.84 2021-01-22 Wekan release
+
+This release adds the following new features:
+
+- [Search All Boards: Added list of board, list and color names. Added operators for due, created and modified.
+  Added support for clicking list titles, label names and board titles. Make some heading translatable.
+  Set focus back to search phrase input after clicking a predicate. Fixed some spacing issues](https://github.com/wekan/wekan/pull/3459).
+  Thanks to jrsupplee.
+
+and fixes the following bugs:
+
+- [Fixed Upper/lowercase errors in some languages due to .toLowerCase](https://github.com/wekan/wekan/commit/a5f6dd6399142b3b05e9b6a0d106d931106807d6).
+  Thanks to bronger and xet7.
+- [Tried to fix possible prototype pollution reported by Deepcode.ai](https://github.com/wekan/wekan/commit/8f553497e4f21d44e78243d22d80b18f729a3d6a).
+  Thanks to Deepcode.ai and xet7.
+- [Disable some logs that are not needed anymore](https://github.com/wekan/wekan/commit/0373da44b38f7300f69470fed3cabab9b63c8783).
+  Thanks to xet7.
+- [Rules not copied during board copy](https://github.com/wekan/wekan/pull/3458).
+  Thanks to jrsupplee.
+ 
+Thanks to above GitHub users for their contributions and translators for their translations.
+
 # v4.83 2021-01-20 Wekan release
 
 This release adds the following new features:
