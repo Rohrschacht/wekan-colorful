@@ -45,19 +45,16 @@ BlazeComponent.extendComponent({
     this.myLists = new ReactiveVar([]);
     this.myLabelNames = new ReactiveVar([]);
     this.myBoardNames = new ReactiveVar([]);
+    this.results = new ReactiveVar([]);
+    this.hasNextPage = new ReactiveVar(false);
+    this.hasPreviousPage = new ReactiveVar(false);
     this.queryParams = null;
     this.parsingErrors = [];
     this.resultsCount = 0;
     this.totalHits = 0;
     this.queryErrors = null;
     this.colorMap = null;
-    // this.colorMap = {};
-    // for (const color of Boards.simpleSchema()._schema['labels.$.color']
-    //   .allowedValues) {
-    //   this.colorMap[TAPi18n.__(`color-${color}`)] = color;
-    // }
-    // // eslint-disable-next-line no-console
-    // console.log('colorMap:', this.colorMap);
+    this.resultsPerPage = 25;
 
     Meteor.call('myLists', (err, data) => {
       if (!err) {
@@ -76,8 +73,17 @@ BlazeComponent.extendComponent({
         this.myBoardNames.set(data);
       }
     });
+  },
 
+  onRendered() {
     Meteor.subscribe('setting');
+
+    // eslint-disable-next-line no-console
+    //console.log('lang:', TAPi18n.getLanguage());
+    this.colorMap = Boards.colorMap();
+    // eslint-disable-next-line no-console
+    // console.log('colorMap:', this.colorMap);
+
     if (Session.get('globalQuery')) {
       this.searchAllBoards(Session.get('globalQuery'));
     }
@@ -85,6 +91,7 @@ BlazeComponent.extendComponent({
 
   resetSearch() {
     this.searching.set(false);
+    this.results.set([]);
     this.hasResults.set(false);
     this.hasQueryErrors.set(false);
     this.resultsHeading.set('');
@@ -94,79 +101,85 @@ BlazeComponent.extendComponent({
     this.queryErrors = null;
   },
 
-  results() {
+  getSessionData() {
+    return SessionData.findOne({
+      userId: Meteor.userId(),
+      sessionId: SessionData.getSessionId(),
+    });
+  },
+
+  getResults() {
     // eslint-disable-next-line no-console
     // console.log('getting results');
     if (this.queryParams) {
-      const results = Cards.globalSearch(this.queryParams);
-      this.queryErrors = results.errors;
+      const sessionData = this.getSessionData();
       // eslint-disable-next-line no-console
-      // console.log('errors:', this.queryErrors);
-      if (this.errorMessages().length) {
+      // console.log('selector:', sessionData.getSelector());
+      // console.log('session data:', sessionData);
+      const projection = sessionData.getProjection();
+      projection.skip = 0;
+      const cards = Cards.find({ _id: { $in: sessionData.cards } }, projection);
+      this.queryErrors = sessionData.errors;
+      if (this.queryErrors.length) {
         this.hasQueryErrors.set(true);
         return null;
       }
 
-      if (results.cards) {
-        const sessionData = SessionData.findOne({ userId: Meteor.userId() });
+      if (cards) {
         this.totalHits = sessionData.totalHits;
-        this.resultsCount = results.cards.count();
+        this.resultsCount = cards.count();
+        this.resultsStart = sessionData.lastHit - this.resultsCount + 1;
+        this.resultsEnd = sessionData.lastHit;
         this.resultsHeading.set(this.getResultsHeading());
-        return results.cards;
+        this.results.set(cards);
+        this.hasNextPage.set(sessionData.lastHit < sessionData.totalHits);
+        this.hasPreviousPage.set(
+          sessionData.lastHit - sessionData.resultsCount > 0,
+        );
       }
     }
     this.resultsCount = 0;
-    return [];
+    return null;
   },
 
   errorMessages() {
-    const messages = [];
-
-    if (this.queryErrors) {
-      this.queryErrors.notFound.boards.forEach(board => {
-        messages.push({ tag: 'board-title-not-found', value: board });
-      });
-      this.queryErrors.notFound.swimlanes.forEach(swim => {
-        messages.push({ tag: 'swimlane-title-not-found', value: swim });
-      });
-      this.queryErrors.notFound.lists.forEach(list => {
-        messages.push({ tag: 'list-title-not-found', value: list });
-      });
-      this.queryErrors.notFound.labels.forEach(label => {
-        const color = Object.entries(this.colorMap)
-          .filter(value => value[1] === label)
-          .map(value => value[0]);
-        if (color.length) {
-          messages.push({
-            tag: 'label-color-not-found',
-            value: color[0],
-          });
-        } else {
-          messages.push({ tag: 'label-not-found', value: label });
-        }
-      });
-      this.queryErrors.notFound.users.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
-      this.queryErrors.notFound.members.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
-      this.queryErrors.notFound.assignees.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
+    if (this.parsingErrors.length) {
+      return this.parsingErrorMessages();
     }
+    return this.queryErrorMessages();
+  },
+
+  parsingErrorMessages() {
+    const messages = [];
 
     if (this.parsingErrors.length) {
       this.parsingErrors.forEach(err => {
-        messages.push(err);
+        messages.push(TAPi18n.__(err.tag, err.value));
       });
     }
 
     return messages;
   },
 
+  queryErrorMessages() {
+    messages = [];
+
+    this.queryErrors.forEach(err => {
+      let value = err.color ? TAPi18n.__(`color-${err.value}`) : err.value;
+      if (!value) {
+        value = err.value;
+      }
+      messages.push(TAPi18n.__(err.tag, value));
+    });
+
+    return messages;
+  },
+
   searchAllBoards(query) {
     query = query.trim();
+    // eslint-disable-next-line no-console
+    //console.log('query:', query);
+
     this.query.set(query);
 
     this.resetSearch();
@@ -175,23 +188,22 @@ BlazeComponent.extendComponent({
       return;
     }
 
-    // eslint-disable-next-line no-console
-    // console.log('query:', query);
-
     this.searching.set(true);
 
-    if (!this.colorMap) {
-      this.colorMap = {};
-      for (const color of Boards.simpleSchema()._schema['labels.$.color']
-        .allowedValues) {
-        this.colorMap[TAPi18n.__(`color-${color}`)] = color;
-      }
-    }
-
-    const reOperator1 = /^((?<operator>\w+):|(?<abbrev>[#@]))(?<value>\w+)(\s+|$)/;
-    const reOperator2 = /^((?<operator>\w+):|(?<abbrev>[#@]))(?<quote>["']*)(?<value>.*?)\k<quote>(\s+|$)/;
-    const reText = /^(?<text>\S+)(\s+|$)/;
-    const reQuotedText = /^(?<quote>["'])(?<text>\w+)\k<quote>(\s+|$)/;
+    const reOperator1 = new RegExp(
+      '^((?<operator>[\\p{Letter}\\p{Mark}]+):|(?<abbrev>[#@]))(?<value>[\\p{Letter}\\p{Mark}]+)(\\s+|$)',
+      'iu',
+    );
+    const reOperator2 = new RegExp(
+      '^((?<operator>[\\p{Letter}\\p{Mark}]+):|(?<abbrev>[#@]))(?<quote>["\']*)(?<value>.*?)\\k<quote>(\\s+|$)',
+      'iu',
+    );
+    const reText = new RegExp('^(?<text>\\S+)(\\s+|$)', 'u');
+    const reQuotedText = new RegExp(
+      '^(?<quote>["\'])(?<text>.*?)\\k<quote>(\\s+|$)',
+      'u',
+    );
+    const reNegatedOperator = new RegExp('^-(?<operator>.*)$');
 
     const operators = {
       'operator-board': 'boards',
@@ -208,20 +220,69 @@ BlazeComponent.extendComponent({
       'operator-member-abbrev': 'members',
       'operator-assignee': 'assignees',
       'operator-assignee-abbrev': 'assignees',
-      'operator-is': 'is',
+      'operator-status': 'status',
       'operator-due': 'dueAt',
       'operator-created': 'createdAt',
       'operator-modified': 'modifiedAt',
+      'operator-comment': 'comments',
+      'operator-has': 'has',
+      'operator-sort': 'sort',
+      'operator-limit': 'limit',
     };
 
-    const operatorMap = {};
-    for (const op in operators) {
-      operatorMap[TAPi18n.__(op).toLowerCase()] = operators[op];
-    }
-
+    const predicates = {
+      due: {
+        'predicate-overdue': 'overdue',
+      },
+      durations: {
+        'predicate-week': 'week',
+        'predicate-month': 'month',
+        'predicate-quarter': 'quarter',
+        'predicate-year': 'year',
+      },
+      status: {
+        'predicate-archived': 'archived',
+        'predicate-all': 'all',
+        'predicate-open': 'open',
+        'predicate-ended': 'ended',
+        'predicate-public': 'public',
+        'predicate-private': 'private',
+      },
+      sorts: {
+        'predicate-due': 'dueAt',
+        'predicate-created': 'createdAt',
+        'predicate-modified': 'modifiedAt',
+      },
+      has: {
+        'predicate-description': 'description',
+        'predicate-checklist': 'checklist',
+        'predicate-attachment': 'attachment',
+        'predicate-start': 'startAt',
+        'predicate-end': 'endAt',
+        'predicate-due': 'dueAt',
+        'predicate-assignee': 'assignees',
+        'predicate-member': 'members',
+      },
+    };
+    const predicateTranslations = {};
+    Object.entries(predicates).forEach(([category, catPreds]) => {
+      predicateTranslations[category] = {};
+      Object.entries(catPreds).forEach(([tag, value]) => {
+        predicateTranslations[category][TAPi18n.__(tag)] = value;
+      });
+    });
     // eslint-disable-next-line no-console
-    console.log('operatorMap:', operatorMap);
+    // console.log('predicateTranslations:', predicateTranslations);
+
+    const operatorMap = {};
+    Object.entries(operators).forEach(([key, value]) => {
+      operatorMap[TAPi18n.__(key).toLowerCase()] = value;
+    });
+    // eslint-disable-next-line no-console
+    // console.log('operatorMap:', operatorMap);
+
     const params = {
+      limit: this.resultsPerPage,
       boards: [],
       swimlanes: [],
       lists: [],
@@ -229,10 +290,12 @@ BlazeComponent.extendComponent({
       members: [],
       assignees: [],
       labels: [],
-      is: [],
+      status: [],
       dueAt: null,
       createdAt: null,
       modifiedAt: null,
+      comments: [],
+      has: [],
     };
 
     let text = '';
@@ -251,50 +314,159 @@ BlazeComponent.extendComponent({
         if (m.groups.operator) {
           op = m.groups.operator.toLowerCase();
         } else {
-          op = m.groups.abbrev;
+          op = m.groups.abbrev.toLowerCase();
         }
-        if (op !== '__proto__') {
-          if (op in operatorMap) {
-            let value = m.groups.value;
-            if (operatorMap[op] === 'labels') {
-              if (value in this.colorMap) {
-                value = this.colorMap[value];
-              }
-            } else if (
-              ['dueAt', 'createdAt', 'modifiedAt'].includes(operatorMap[op])
-            ) {
-              const days = parseInt(value, 10);
-              if (isNaN(days)) {
-                if (
-                  ['day', 'week', 'month', 'quarter', 'year'].includes(value)
-                ) {
-                  value = moment()
-                    .subtract(1, value)
-                    .format();
-                } else {
-                  this.parsingErrors.push({
-                    tag: 'operator-number-expected',
-                    value: { operator: op, value },
-                  });
-                  value = null;
+        // eslint-disable-next-line no-prototype-builtins
+        if (operatorMap.hasOwnProperty(op)) {
+          const operator = operatorMap[op];
+          let value = m.groups.value;
+          if (operator === 'labels') {
+            if (value in this.colorMap) {
+              value = this.colorMap[value];
+              // console.log('found color:', value);
+            }
+          } else if (['dueAt', 'createdAt', 'modifiedAt'].includes(operator)) {
+            let days = parseInt(value, 10);
+            let duration = null;
+            if (isNaN(days)) {
+              // duration was specified as text
+              if (predicateTranslations.durations[value]) {
+                duration = predicateTranslations.durations[value];
+                let date = null;
+                switch (duration) {
+                  case 'week':
+                    let week = moment().week();
+                    if (week === 52) {
+                      date = moment(1, 'W');
+                      date.set('year', date.year() + 1);
+                    } else {
+                      date = moment(week + 1, 'W');
+                    }
+                    break;
+                  case 'month':
+                    let month = moment().month();
+                    // .month() is zero indexed
+                    if (month === 11) {
+                      date = moment(1, 'M');
+                      date.set('year', date.year() + 1);
+                    } else {
+                      date = moment(month + 2, 'M');
+                    }
+                    break;
+                  case 'quarter':
+                    let quarter = moment().quarter();
+                    if (quarter === 4) {
+                      date = moment(1, 'Q');
+                      date.set('year', date.year() + 1);
+                    } else {
+                      date = moment(quarter + 1, 'Q');
+                    }
+                    break;
+                  case 'year':
+                    date = moment(moment().year() + 1, 'YYYY');
+                    break;
                 }
+                if (date) {
+                  value = {
+                    operator: '$lt',
+                    value: date.format('YYYY-MM-DD'),
+                  };
+                }
+              } else if (operator === 'dueAt' && value === 'overdue') {
+                value = {
+                  operator: '$lt',
+                  value: moment().format('YYYY-MM-DD'),
+                };
               } else {
-                value = moment()
-                  .subtract(days, 'days')
-                  .format();
+                this.parsingErrors.push({
+                  tag: 'operator-number-expected',
+                  value: { operator: op, value },
+                });
+                value = null;
+              }
+            } else {
+              if (operator === 'dueAt') {
+                value = {
+                  operator: '$lt',
+                  value: moment(moment().format('YYYY-MM-DD'))
+                    .add(days + 1, duration ? duration : 'days')
+                    .format(),
+                };
+              } else {
+                value = {
+                  operator: '$gte',
+                  value: moment(moment().format('YYYY-MM-DD'))
+                    .subtract(days, duration ? duration : 'days')
+                    .format(),
+                };
               }
             }
-            if (Array.isArray(params[operatorMap[op]])) {
-              params[operatorMap[op]].push(value);
-            } else {
-              params[operatorMap[op]] = value;
+          } else if (operator === 'sort') {
+            let negated = false;
+            const m = value.match(reNegatedOperator);
+            if (m) {
+              value = m.groups.operator;
+              negated = true;
             }
-          } else {
-            this.parsingErrors.push({
-              tag: 'operator-unknown-error',
-              value: op,
-            });
+            if (!predicateTranslations.sorts[value]) {
+              this.parsingErrors.push({
+                tag: 'operator-sort-invalid',
+                value,
+              });
+            } else {
+              value = {
+                name: predicateTranslations.sorts[value],
+                order: negated ? 'des' : 'asc',
+              };
+            }
+          } else if (operator === 'status') {
+            if (!predicateTranslations.status[value]) {
+              this.parsingErrors.push({
+                tag: 'operator-status-invalid',
+                value,
+              });
+            } else {
+              value = predicateTranslations.status[value];
+            }
+          } else if (operator === 'has') {
+            let negated = false;
+            const m = value.match(reNegatedOperator);
+            if (m) {
+              value = m.groups.operator;
+              negated = true;
+            }
+            if (!predicateTranslations.has[value]) {
+              this.parsingErrors.push({
+                tag: 'operator-has-invalid',
+                value,
+              });
+            } else {
+              value = {
+                field: predicateTranslations.has[value],
+                exists: !negated,
+              };
+            }
+          } else if (operator === 'limit') {
+            const limit = parseInt(value, 10);
+            if (isNaN(limit) || limit < 1) {
+              this.parsingErrors.push({
+                tag: 'operator-limit-invalid',
+                value,
+              });
+            } else {
+              value = limit;
+            }
           }
+          if (Array.isArray(params[operator])) {
+            params[operator].push(value);
+          } else {
+            params[operator] = value;
+          }
+        } else {
+          this.parsingErrors.push({
+            tag: 'operator-unknown-error',
+            value: op,
+          });
         }
         continue;
       }
@@ -318,17 +490,62 @@ BlazeComponent.extendComponent({
     params.text = text;
 
     // eslint-disable-next-line no-console
-    // console.log('params:', params);
+    console.log('params:', params);
 
     this.queryParams = params;
 
+    if (this.parsingErrors.length) {
+      this.searching.set(false);
+      this.queryErrors = this.parsingErrorMessages();
+      this.hasResults.set(true);
+      this.hasQueryErrors.set(true);
+      return;
+    }
+
     this.autorun(() => {
-      const handle = subManager.subscribe('globalSearch', params);
+      const handle = Meteor.subscribe(
+        'globalSearch',
+        SessionData.getSessionId(),
+        params,
+      );
       Tracker.nonreactive(() => {
         Tracker.autorun(() => {
-          // eslint-disable-next-line no-console
-          // console.log('ready:', handle.ready());
           if (handle.ready()) {
+            this.getResults();
+            this.searching.set(false);
+            this.hasResults.set(true);
+          }
+        });
+      });
+    });
+  },
+
+  nextPage() {
+    const sessionData = this.getSessionData();
+
+    this.autorun(() => {
+      const handle = Meteor.subscribe('nextPage', sessionData.sessionId);
+      Tracker.nonreactive(() => {
+        Tracker.autorun(() => {
+          if (handle.ready()) {
+            this.getResults();
+            this.searching.set(false);
+            this.hasResults.set(true);
+          }
+        });
+      });
+    });
+  },
+
+  previousPage() {
+    const sessionData = this.getSessionData();
+
+    this.autorun(() => {
+      const handle = Meteor.subscribe('previousPage', sessionData.sessionId);
+      Tracker.nonreactive(() => {
+        Tracker.autorun(() => {
+          if (handle.ready()) {
+            this.getResults();
             this.searching.set(false);
             this.hasResults.set(true);
           }
@@ -347,8 +564,8 @@ BlazeComponent.extendComponent({
     }
 
     return TAPi18n.__('n-n-of-n-cards-found', {
-      start: 1,
-      end: this.resultsCount,
+      start: this.resultsStart,
+      end: this.resultsEnd,
       total: this.totalHits,
     });
   },
@@ -363,6 +580,7 @@ BlazeComponent.extendComponent({
       operator_board: TAPi18n.__('operator-board'),
       operator_list: TAPi18n.__('operator-list'),
       operator_swimlane: TAPi18n.__('operator-swimlane'),
+      operator_comment: TAPi18n.__('operator-comment'),
       operator_label: TAPi18n.__('operator-label'),
       operator_label_abbrev: TAPi18n.__('operator-label-abbrev'),
       operator_user: TAPi18n.__('operator-user'),
@@ -371,51 +589,87 @@ BlazeComponent.extendComponent({
       operator_member_abbrev: TAPi18n.__('operator-member-abbrev'),
       operator_assignee: TAPi18n.__('operator-assignee'),
       operator_assignee_abbrev: TAPi18n.__('operator-assignee-abbrev'),
+      operator_due: TAPi18n.__('operator-due'),
+      operator_created: TAPi18n.__('operator-created'),
+      operator_modified: TAPi18n.__('operator-modified'),
+      operator_status: TAPi18n.__('operator-status'),
+      operator_has: TAPi18n.__('operator-has'),
+      operator_sort: TAPi18n.__('operator-sort'),
+      operator_limit: TAPi18n.__('operator-limit'),
+      predicate_overdue: TAPi18n.__('predicate-overdue'),
+      predicate_archived: TAPi18n.__('predicate-archived'),
+      predicate_all: TAPi18n.__('predicate-all'),
+      predicate_ended: TAPi18n.__('predicate-ended'),
+      predicate_week: TAPi18n.__('predicate-week'),
+      predicate_month: TAPi18n.__('predicate-month'),
+      predicate_quarter: TAPi18n.__('predicate-quarter'),
+      predicate_year: TAPi18n.__('predicate-year'),
+      predicate_attachment: TAPi18n.__('predicate-attachment'),
+      predicate_description: TAPi18n.__('predicate-description'),
+      predicate_checklist: TAPi18n.__('predicate-checklist'),
+      predicate_public: TAPi18n.__('predicate-public'),
+      predicate_private: TAPi18n.__('predicate-private'),
+      predicate_due: TAPi18n.__('predicate-due'),
+      predicate_created: TAPi18n.__('predicate-created'),
+      predicate_modified: TAPi18n.__('predicate-modified'),
+      predicate_start: TAPi18n.__('predicate-start'),
+      predicate_end: TAPi18n.__('predicate-end'),
+      predicate_assignee: TAPi18n.__('predicate-assignee'),
+      predicate_member: TAPi18n.__('predicate-member'),
     };
 
-    text = `# ${TAPi18n.__('globalSearch-instructions-heading')}`;
+    let text = `# ${TAPi18n.__('globalSearch-instructions-heading')}`;
     text += `\n${TAPi18n.__('globalSearch-instructions-description', tags)}`;
-    text += `\n${TAPi18n.__('globalSearch-instructions-operators', tags)}`;
-    text += `\n* ${TAPi18n.__(
+    text += `\n\n${TAPi18n.__('globalSearch-instructions-operators', tags)}`;
+
+    [
       'globalSearch-instructions-operator-board',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
       'globalSearch-instructions-operator-list',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
       'globalSearch-instructions-operator-swimlane',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
+      'globalSearch-instructions-operator-comment',
       'globalSearch-instructions-operator-label',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
       'globalSearch-instructions-operator-hash',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
       'globalSearch-instructions-operator-user',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-operator-at', tags)}`;
-    text += `\n* ${TAPi18n.__(
+      'globalSearch-instructions-operator-at',
       'globalSearch-instructions-operator-member',
-      tags,
-    )}`;
-    text += `\n* ${TAPi18n.__(
       'globalSearch-instructions-operator-assignee',
-      tags,
-    )}`;
+      'globalSearch-instructions-operator-due',
+      'globalSearch-instructions-operator-created',
+      'globalSearch-instructions-operator-modified',
+      'globalSearch-instructions-operator-status',
+    ].forEach(instruction => {
+      text += `\n* ${TAPi18n.__(instruction, tags)}`;
+    });
+
+    [
+      'globalSearch-instructions-status-archived',
+      'globalSearch-instructions-status-public',
+      'globalSearch-instructions-status-private',
+      'globalSearch-instructions-status-all',
+      'globalSearch-instructions-status-ended',
+    ].forEach(instruction => {
+      text += `\n    * ${TAPi18n.__(instruction, tags)}`;
+    });
+
+    [
+      'globalSearch-instructions-operator-has',
+      'globalSearch-instructions-operator-sort',
+      'globalSearch-instructions-operator-limit',
+    ].forEach(instruction => {
+      text += `\n* ${TAPi18n.__(instruction, tags)}`;
+    });
 
     text += `\n## ${TAPi18n.__('heading-notes')}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-notes-1', tags)}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-notes-2', tags)}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-notes-3', tags)}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-notes-4', tags)}`;
-    text += `\n* ${TAPi18n.__('globalSearch-instructions-notes-5', tags)}`;
+    [
+      'globalSearch-instructions-notes-1',
+      'globalSearch-instructions-notes-2',
+      'globalSearch-instructions-notes-3',
+      'globalSearch-instructions-notes-3-2',
+      'globalSearch-instructions-notes-4',
+      'globalSearch-instructions-notes-5',
+    ].forEach(instruction => {
+      text += `\n* ${TAPi18n.__(instruction, tags)}`;
+    });
 
     return text;
   },
@@ -435,10 +689,19 @@ BlazeComponent.extendComponent({
           evt.preventDefault();
           this.searchAllBoards(evt.target.searchQuery.value);
         },
+        'click .js-next-page'(evt) {
+          evt.preventDefault();
+          this.nextPage();
+        },
+        'click .js-previous-page'(evt) {
+          evt.preventDefault();
+          this.previousPage();
+        },
         'click .js-label-color'(evt) {
           evt.preventDefault();
+          const input = document.getElementById('global-search-input');
           this.query.set(
-            `${this.query.get()} ${TAPi18n.__('operator-label')}:"${
+            `${input.value} ${TAPi18n.__('operator-label')}:"${
               evt.currentTarget.textContent
             }"`,
           );
@@ -446,8 +709,9 @@ BlazeComponent.extendComponent({
         },
         'click .js-board-title'(evt) {
           evt.preventDefault();
+          const input = document.getElementById('global-search-input');
           this.query.set(
-            `${this.query.get()} ${TAPi18n.__('operator-board')}:"${
+            `${input.value} ${TAPi18n.__('operator-board')}:"${
               evt.currentTarget.textContent
             }"`,
           );
@@ -455,8 +719,9 @@ BlazeComponent.extendComponent({
         },
         'click .js-list-title'(evt) {
           evt.preventDefault();
+          const input = document.getElementById('global-search-input');
           this.query.set(
-            `${this.query.get()} ${TAPi18n.__('operator-list')}:"${
+            `${input.value} ${TAPi18n.__('operator-list')}:"${
               evt.currentTarget.textContent
             }"`,
           );
@@ -464,8 +729,9 @@ BlazeComponent.extendComponent({
         },
         'click .js-label-name'(evt) {
           evt.preventDefault();
+          const input = document.getElementById('global-search-input');
           this.query.set(
-            `${this.query.get()} ${TAPi18n.__('operator-label')}:"${
+            `${input.value} ${TAPi18n.__('operator-label')}:"${
               evt.currentTarget.textContent
             }"`,
           );

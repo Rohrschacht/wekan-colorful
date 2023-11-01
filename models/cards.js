@@ -26,6 +26,13 @@ Cards.attachSchema(
         }
       },
     },
+    archivedAt: {
+      /**
+       * latest archiving date
+       */
+      type: Date,
+      optional: true,
+    },
     parentId: {
       /**
        * ID of the parent card
@@ -695,7 +702,9 @@ Cards.helpers({
     const definitions = CustomFields.find({
       boardIds: { $in: [this.boardId] },
     }).fetch();
-
+    if (!definitions) {
+      return {};
+    }
     // match right definition to each field
     if (!this.customFields) return [];
     const ret = this.customFields.map(customField => {
@@ -724,9 +733,15 @@ Cards.helpers({
         definition,
       };
     });
-    if (ret.definition !== undefined) {
-      ret.sort((a, b) => a.definition.name.localeCompare(b.definition.name));
-    }
+    // at linked cards custom fields definition is not found
+    ret.sort(
+      (a, b) =>
+        a.definition !== undefined &&
+        b.definition !== undefined &&
+        a.definition.name !== undefined &&
+        b.definition.name !== undefined &&
+        a.definition.name.localeCompare(b.definition.name),
+    );
     return ret;
   },
 
@@ -1446,6 +1461,7 @@ Cards.mutations({
     return {
       $set: {
         archived: true,
+        archivedAt: new Date(),
       },
     };
   },
@@ -1863,262 +1879,6 @@ Cards.mutations({
   },
 });
 
-Cards.globalSearch = queryParams => {
-  const userId = Meteor.userId();
-  // eslint-disable-next-line no-console
-  // console.log('userId:', userId);
-
-  const errors = new (class {
-    constructor() {
-      this.notFound = {
-        boards: [],
-        swimlanes: [],
-        lists: [],
-        labels: [],
-        users: [],
-        members: [],
-        assignees: [],
-        is: [],
-      };
-    }
-
-    hasErrors() {
-      for (const prop in this.notFound) {
-        if (this.notFound[prop].length) {
-          return true;
-        }
-      }
-      return false;
-    }
-  })();
-
-  const selector = {
-    archived: false,
-    type: 'cardType-card',
-    boardId: { $in: Boards.userBoardIds(userId) },
-    swimlaneId: { $nin: Swimlanes.archivedSwimlaneIds() },
-    listId: { $nin: Lists.archivedListIds() },
-  };
-
-  if (queryParams.boards.length) {
-    const queryBoards = [];
-    queryParams.boards.forEach(query => {
-      const boards = Boards.userSearch(userId, {
-        title: new RegExp(query, 'i'),
-      });
-      if (boards.count()) {
-        boards.forEach(board => {
-          queryBoards.push(board._id);
-        });
-      } else {
-        errors.notFound.boards.push(query);
-      }
-    });
-
-    selector.boardId.$in = queryBoards;
-  }
-
-  if (queryParams.swimlanes.length) {
-    const querySwimlanes = [];
-    queryParams.swimlanes.forEach(query => {
-      const swimlanes = Swimlanes.find({
-        title: new RegExp(query, 'i'),
-      });
-      if (swimlanes.count()) {
-        swimlanes.forEach(swim => {
-          querySwimlanes.push(swim._id);
-        });
-      } else {
-        errors.notFound.swimlanes.push(query);
-      }
-    });
-
-    selector.swimlaneId.$in = querySwimlanes;
-  }
-
-  if (queryParams.lists.length) {
-    const queryLists = [];
-    queryParams.lists.forEach(query => {
-      const lists = Lists.find({
-        title: new RegExp(query, 'i'),
-      });
-      if (lists.count()) {
-        lists.forEach(list => {
-          queryLists.push(list._id);
-        });
-      } else {
-        errors.notFound.lists.push(query);
-      }
-    });
-
-    selector.listId.$in = queryLists;
-  }
-
-  if (queryParams.dueAt !== null) {
-    selector.dueAt = { $gte: new Date(queryParams.dueAt) };
-  }
-
-  if (queryParams.createdAt !== null) {
-    selector.createdAt = { $gte: new Date(queryParams.createdAt) };
-  }
-
-  if (queryParams.modifiedAt !== null) {
-    selector.modifiedAt = { $gte: new Date(queryParams.modifiedAt) };
-  }
-
-  const queryMembers = [];
-  const queryAssignees = [];
-  if (queryParams.users.length) {
-    queryParams.users.forEach(query => {
-      const users = Users.find({
-        username: query,
-      });
-      if (users.count()) {
-        users.forEach(user => {
-          queryMembers.push(user._id);
-          queryAssignees.push(user._id);
-        });
-      } else {
-        errors.notFound.users.push(query);
-      }
-    });
-  }
-
-  if (queryParams.members.length) {
-    queryParams.members.forEach(query => {
-      const users = Users.find({
-        username: query,
-      });
-      if (users.count()) {
-        users.forEach(user => {
-          queryMembers.push(user._id);
-        });
-      } else {
-        errors.notFound.members.push(query);
-      }
-    });
-  }
-
-  if (queryParams.assignees.length) {
-    queryParams.assignees.forEach(query => {
-      const users = Users.find({
-        username: query,
-      });
-      if (users.count()) {
-        users.forEach(user => {
-          queryAssignees.push(user._id);
-        });
-      } else {
-        errors.notFound.assignees.push(query);
-      }
-    });
-  }
-
-  if (queryMembers.length && queryAssignees.length) {
-    selector.$or = [
-      { members: { $in: queryMembers } },
-      { assignees: { $in: queryAssignees } },
-    ];
-  } else if (queryMembers.length) {
-    selector.members = { $in: queryMembers };
-  } else if (queryAssignees.length) {
-    selector.assignees = { $in: queryAssignees };
-  }
-
-  if (queryParams.labels.length) {
-    queryParams.labels.forEach(label => {
-      const queryLabels = [];
-
-      let boards = Boards.userSearch(userId, {
-        labels: { $elemMatch: { color: label.toLowerCase() } },
-      });
-
-      if (boards.count()) {
-        boards.forEach(board => {
-          // eslint-disable-next-line no-console
-          // console.log('board:', board);
-          // eslint-disable-next-line no-console
-          // console.log('board.labels:', board.labels);
-          board.labels
-            .filter(boardLabel => {
-              return boardLabel.color === label.toLowerCase();
-            })
-            .forEach(boardLabel => {
-              queryLabels.push(boardLabel._id);
-            });
-        });
-      } else {
-        // eslint-disable-next-line no-console
-        // console.log('label:', label);
-        const reLabel = new RegExp(label, 'i');
-        // eslint-disable-next-line no-console
-        // console.log('reLabel:', reLabel);
-        boards = Boards.userSearch(userId, {
-          labels: { $elemMatch: { name: reLabel } },
-        });
-
-        if (boards.count()) {
-          boards.forEach(board => {
-            board.labels
-              .filter(boardLabel => {
-                return boardLabel.name.match(reLabel);
-              })
-              .forEach(boardLabel => {
-                queryLabels.push(boardLabel._id);
-              });
-          });
-        } else {
-          errors.notFound.labels.push(label);
-        }
-      }
-
-      selector.labelIds = { $in: queryLabels };
-    });
-  }
-
-  if (errors.hasErrors()) {
-    return { cards: null, errors };
-  }
-
-  if (queryParams.text) {
-    const regex = new RegExp(queryParams.text, 'i');
-
-    selector.$or = [
-      { title: regex },
-      { description: regex },
-      { customFields: { $elemMatch: { value: regex } } },
-    ];
-  }
-
-  // eslint-disable-next-line no-console
-  // console.log('selector:', selector);
-  const cards = Cards.find(selector, {
-    fields: {
-      _id: 1,
-      archived: 1,
-      boardId: 1,
-      swimlaneId: 1,
-      listId: 1,
-      title: 1,
-      type: 1,
-      sort: 1,
-      members: 1,
-      assignees: 1,
-      colors: 1,
-      dueAt: 1,
-      createdAt: 1,
-      modifiedAt: 1,
-      labelIds: 1,
-    },
-    limit: 50,
-  });
-
-  // eslint-disable-next-line no-console
-  //console.log('count:', cards.count());
-
-  return { cards, errors };
-};
-
 //FUNCTIONS FOR creation of Activities
 
 function updateActivities(doc, fieldNames, modifier) {
@@ -2352,6 +2112,8 @@ function cardCustomFields(userId, doc, fieldNames, modifier) {
             activityType: 'setCustomField',
             boardId: doc.boardId,
             cardId: doc._id,
+            listId: doc.listId,
+            swimlaneId: doc.swimlaneId,
           };
           Activities.insert(act);
         }
@@ -2813,6 +2575,7 @@ if (Meteor.isServer) {
    * @param {string} list the list ID of the card
    * @param {string} cardId the ID of the card
    * @param {string} [title] the new title of the card
+   * @param {string} [sort] the new sort value of the card
    * @param {string} [listId] the new list ID of the card (move operation)
    * @param {string} [description] the new description of the card
    * @param {string} [authorId] change the owner of the card
@@ -2859,6 +2622,22 @@ if (Meteor.isServer) {
           {
             $set: {
               title: newTitle,
+            },
+          },
+        );
+      }
+      if (req.body.hasOwnProperty('sort')) {
+        const newSort = req.body.sort;
+        Cards.direct.update(
+          {
+            _id: paramCardId,
+            listId: paramListId,
+            boardId: paramBoardId,
+            archived: false,
+          },
+          {
+            $set: {
+              sort: newSort,
             },
           },
         );

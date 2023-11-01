@@ -166,16 +166,14 @@
   .minicard-assignees
     float: right
     margin-left: 5px
-
-    .assigneehr
-      border-top: 1px solid red
-      margin-bottom: 4px
+    margin-bottom: 4px
 
     .member
       float: right
       border-radius: 50%
       height: 28px
       width: @height
+      margin-bottom: 4px
 
     .assignee
       float: right
@@ -185,6 +183,9 @@
 
     + .badges
       margin-top: 5px
+
+  .minicard-assignees
+    border-bottom: 1px solid red
 
   .minicard-members:empty,
   .minicard-assignees:empty
