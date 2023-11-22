@@ -1,3 +1,53 @@
+import moment from 'moment';
+import Users from '../../models/users';
+import Boards from '../../models/boards';
+import Lists from '../../models/lists';
+import Swimlanes from '../../models/swimlanes';
+import Cards from '../../models/cards';
+import CardComments from '../../models/cardComments';
+import Attachments from '../../models/attachments';
+import Checklists from '../../models/checklists';
+import ChecklistItems from '../../models/checklistItems';
+import SessionData from '../../models/usersessiondata';
+import CustomFields from '../../models/customFields';
+import {
+  DEFAULT_LIMIT,
+  OPERATOR_ASSIGNEE,
+  OPERATOR_BOARD,
+  OPERATOR_COMMENT,
+  OPERATOR_CREATED_AT,
+  OPERATOR_CREATOR,
+  OPERATOR_DUE,
+  OPERATOR_HAS,
+  OPERATOR_LABEL,
+  OPERATOR_LIMIT,
+  OPERATOR_LIST,
+  OPERATOR_MEMBER,
+  OPERATOR_MODIFIED_AT,
+  OPERATOR_SORT,
+  OPERATOR_STATUS,
+  OPERATOR_SWIMLANE,
+  OPERATOR_USER,
+  ORDER_ASCENDING,
+  PREDICATE_ALL,
+  PREDICATE_ARCHIVED,
+  PREDICATE_ASSIGNEES,
+  PREDICATE_ATTACHMENT,
+  PREDICATE_CHECKLIST,
+  PREDICATE_CREATED_AT,
+  PREDICATE_DESCRIPTION,
+  PREDICATE_DUE_AT,
+  PREDICATE_END_AT,
+  PREDICATE_ENDED,
+  PREDICATE_MEMBERS,
+  PREDICATE_MODIFIED_AT,
+  PREDICATE_PRIVATE,
+  PREDICATE_PUBLIC,
+  PREDICATE_START_AT,
+  PREDICATE_SYSTEM,
+} from '/config/search-const';
+import { QueryErrors, QueryParams, Query } from '/config/query-classes';
+
 const escapeForRegex = require('escape-string-regexp');
 
 Meteor.publish('card', cardId => {
@@ -5,260 +55,64 @@ Meteor.publish('card', cardId => {
   return Cards.find({ _id: cardId });
 });
 
-Meteor.publish('myCards', function() {
-  const userId = Meteor.userId();
-
-  const archivedBoards = [];
-  Boards.find({ archived: true }).forEach(board => {
-    archivedBoards.push(board._id);
-  });
-
-  const archivedSwimlanes = [];
-  Swimlanes.find({ archived: true }).forEach(swimlane => {
-    archivedSwimlanes.push(swimlane._id);
-  });
-
-  const archivedLists = [];
-  Lists.find({ archived: true }).forEach(list => {
-    archivedLists.push(list._id);
-  });
-
-  selector = {
-    archived: false,
-    boardId: { $nin: archivedBoards },
-    swimlaneId: { $nin: archivedSwimlanes },
-    listId: { $nin: archivedLists },
-    $or: [{ members: userId }, { assignees: userId }],
-  };
-
-  const cards = Cards.find(selector, {
-    fields: {
-      _id: 1,
-      archived: 1,
-      boardId: 1,
-      swimlaneId: 1,
-      listId: 1,
-      title: 1,
-      type: 1,
-      sort: 1,
-      members: 1,
-      assignees: 1,
-      colors: 1,
-      dueAt: 1,
-    },
-  });
-
-  const boards = [];
-  const swimlanes = [];
-  const lists = [];
-  const users = [];
-
-  cards.forEach(card => {
-    if (card.boardId) boards.push(card.boardId);
-    if (card.swimlaneId) swimlanes.push(card.swimlaneId);
-    if (card.listId) lists.push(card.listId);
-    if (card.members) {
-      card.members.forEach(userId => {
-        users.push(userId);
-      });
-    }
-    if (card.assignees) {
-      card.assignees.forEach(userId => {
-        users.push(userId);
-      });
-    }
-  });
-
-  return [
-    cards,
-    Boards.find({ _id: { $in: boards } }),
-    Swimlanes.find({ _id: { $in: swimlanes } }),
-    Lists.find({ _id: { $in: lists } }),
-    Users.find({ _id: { $in: users } }, { fields: Users.safeFields }),
-  ];
-});
-
-Meteor.publish('dueCards', function(allUsers = false) {
-  check(allUsers, Boolean);
-
-  // eslint-disable-next-line no-console
-  // console.log('all users:', allUsers);
-
-  const user = Users.findOne({ _id: this.userId });
-
-  const archivedBoards = [];
-  Boards.find({ archived: true }).forEach(board => {
-    archivedBoards.push(board._id);
-  });
-
-  const permiitedBoards = [];
-  let selector = {
-    archived: false,
-  };
-
-  selector.$or = [
-    { permission: 'public' },
-    { members: { $elemMatch: { userId: user._id, isActive: true } } },
-  ];
-
-  Boards.find(selector).forEach(board => {
-    permiitedBoards.push(board._id);
-  });
-
-  const archivedSwimlanes = [];
-  Swimlanes.find({ archived: true }).forEach(swimlane => {
-    archivedSwimlanes.push(swimlane._id);
-  });
-
-  const archivedLists = [];
-  Lists.find({ archived: true }).forEach(list => {
-    archivedLists.push(list._id);
-  });
-
-  selector = {
-    archived: false,
-    boardId: { $nin: archivedBoards, $in: permiitedBoards },
-    swimlaneId: { $nin: archivedSwimlanes },
-    listId: { $nin: archivedLists },
-    dueAt: { $ne: null },
-    endAt: null,
-  };
-
-  if (!allUsers) {
-    selector.$or = [{ members: user._id }, { assignees: user._id }];
-  }
-
-  const cards = Cards.find(selector, {
-    fields: {
-      _id: 1,
-      archived: 1,
-      boardId: 1,
-      swimlaneId: 1,
-      listId: 1,
-      title: 1,
-      type: 1,
-      sort: 1,
-      members: 1,
-      assignees: 1,
-      colors: 1,
-      dueAt: 1,
-    },
-  });
-
-  const boards = [];
-  const swimlanes = [];
-  const lists = [];
-  const users = [];
-
-  cards.forEach(card => {
-    if (card.boardId) boards.push(card.boardId);
-    if (card.swimlaneId) swimlanes.push(card.swimlaneId);
-    if (card.listId) lists.push(card.listId);
-    if (card.members) {
-      card.members.forEach(userId => {
-        users.push(userId);
-      });
-    }
-    if (card.assignees) {
-      card.assignees.forEach(userId => {
-        users.push(userId);
-      });
-    }
-  });
-
-  return [
-    cards,
-    Boards.find({ _id: { $in: boards } }),
-    Swimlanes.find({ _id: { $in: swimlanes } }),
-    Lists.find({ _id: { $in: lists } }),
-    Users.find({ _id: { $in: users } }, { fields: Users.safeFields }),
-  ];
-});
-
-Meteor.publish('globalSearch', function(sessionId, queryParams) {
+Meteor.publish('myCards', function(sessionId) {
   check(sessionId, String);
-  check(queryParams, Object);
+
+  const queryParams = new QueryParams();
+  queryParams.addPredicate(OPERATOR_USER, Meteor.user().username);
+  queryParams.setPredicate(OPERATOR_LIMIT, 200);
+
+  const query = buildQuery(queryParams);
+  query.projection.sort = {
+    boardId: 1,
+    swimlaneId: 1,
+    listId: 1,
+  };
+
+  return findCards(sessionId, query);
+});
+
+// Meteor.publish('dueCards', function(sessionId, allUsers = false) {
+//   check(sessionId, String);
+//   check(allUsers, Boolean);
+//
+//   // eslint-disable-next-line no-console
+//   // console.log('all users:', allUsers);
+//
+//   const queryParams = {
+//     has: [{ field: 'dueAt', exists: true }],
+//     limit: 25,
+//     skip: 0,
+//     sort: { name: 'dueAt', order: 'des' },
+//   };
+//
+//   if (!allUsers) {
+//     queryParams.users = [Meteor.user().username];
+//   }
+//
+//   return buildQuery(sessionId, queryParams);
+// });
+
+Meteor.publish('globalSearch', function(sessionId, params, text) {
+  check(sessionId, String);
+  check(params, Object);
+  check(text, String);
 
   // eslint-disable-next-line no-console
-  // console.log('queryParams:', queryParams);
+  // console.log('queryParams:', params);
 
+  return findCards(sessionId, buildQuery(new QueryParams(params, text)));
+});
+
+function buildSelector(queryParams) {
   const userId = Meteor.userId();
-  // eslint-disable-next-line no-console
-  // console.log('userId:', userId);
 
-  const errors = new (class {
-    constructor() {
-      this.notFound = {
-        boards: [],
-        swimlanes: [],
-        lists: [],
-        labels: [],
-        users: [],
-        members: [],
-        assignees: [],
-        status: [],
-        comments: [],
-      };
-
-      this.colorMap = Boards.colorMap();
-    }
-
-    hasErrors() {
-      for (const value of Object.values(this.notFound)) {
-        if (value.length) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    errorMessages() {
-      const messages = [];
-
-      this.notFound.boards.forEach(board => {
-        messages.push({ tag: 'board-title-not-found', value: board });
-      });
-      this.notFound.swimlanes.forEach(swim => {
-        messages.push({ tag: 'swimlane-title-not-found', value: swim });
-      });
-      this.notFound.lists.forEach(list => {
-        messages.push({ tag: 'list-title-not-found', value: list });
-      });
-      this.notFound.comments.forEach(comments => {
-        comments.forEach(text => {
-          messages.push({ tag: 'comment-not-found', value: text });
-        });
-      });
-      this.notFound.labels.forEach(label => {
-        messages.push({
-          tag: 'label-not-found',
-          value: label,
-          color: Boards.labelColors().includes(label),
-        });
-      });
-      this.notFound.users.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
-      this.notFound.members.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
-      this.notFound.assignees.forEach(user => {
-        messages.push({ tag: 'user-username-not-found', value: user });
-      });
-
-      return messages;
-    }
-  })();
+  const errors = new QueryErrors();
 
   let selector = {};
-  let skip = 0;
-  if (queryParams.skip) {
-    skip = queryParams.skip;
-  }
-  let limit = 25;
-  if (queryParams.limit) {
-    limit = queryParams.limit;
-  }
+
+  // eslint-disable-next-line no-console
+  console.log('queryParams:', queryParams);
 
   if (queryParams.selector) {
     selector = queryParams.selector;
@@ -267,15 +121,15 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
 
     let archived = false;
     let endAt = null;
-    if (queryParams.status.length) {
-      queryParams.status.forEach(status => {
-        if (status === 'archived') {
+    if (queryParams.hasOperator(OPERATOR_STATUS)) {
+      queryParams.getPredicates(OPERATOR_STATUS).forEach(status => {
+        if (status === PREDICATE_ARCHIVED) {
           archived = true;
-        } else if (status === 'all') {
+        } else if (status === PREDICATE_ALL) {
           archived = null;
-        } else if (status === 'ended') {
+        } else if (status === PREDICATE_ENDED) {
           endAt = { $nin: [null, ''] };
-        } else if (['private', 'public'].includes(status)) {
+        } else if ([PREDICATE_PRIVATE, PREDICATE_PUBLIC].includes(status)) {
           boardsSelector.permission = status;
         }
       });
@@ -320,9 +174,9 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
       selector.endAt = endAt;
     }
 
-    if (queryParams.boards.length) {
+    if (queryParams.hasOperator(OPERATOR_BOARD)) {
       const queryBoards = [];
-      queryParams.boards.forEach(query => {
+      queryParams.getPredicates(OPERATOR_BOARD).forEach(query => {
         const boards = Boards.userSearch(userId, {
           title: new RegExp(escapeForRegex(query), 'i'),
         });
@@ -331,16 +185,16 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
             queryBoards.push(board._id);
           });
         } else {
-          errors.notFound.boards.push(query);
+          errors.addNotFound(OPERATOR_BOARD, query);
         }
       });
 
       selector.boardId.$in = queryBoards;
     }
 
-    if (queryParams.swimlanes.length) {
+    if (queryParams.hasOperator(OPERATOR_SWIMLANE)) {
       const querySwimlanes = [];
-      queryParams.swimlanes.forEach(query => {
+      queryParams.getPredicates(OPERATOR_SWIMLANE).forEach(query => {
         const swimlanes = Swimlanes.find({
           title: new RegExp(escapeForRegex(query), 'i'),
         });
@@ -349,7 +203,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
             querySwimlanes.push(swim._id);
           });
         } else {
-          errors.notFound.swimlanes.push(query);
+          errors.addNotFound(OPERATOR_SWIMLANE, query);
         }
       });
 
@@ -360,9 +214,9 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
       selector.swimlaneId.$in = querySwimlanes;
     }
 
-    if (queryParams.lists.length) {
+    if (queryParams.hasOperator(OPERATOR_LIST)) {
       const queryLists = [];
-      queryParams.lists.forEach(query => {
+      queryParams.getPredicates(OPERATOR_LIST).forEach(query => {
         const lists = Lists.find({
           title: new RegExp(escapeForRegex(query), 'i'),
         });
@@ -371,7 +225,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
             queryLists.push(list._id);
           });
         } else {
-          errors.notFound.lists.push(query);
+          errors.addNotFound(OPERATOR_LIST, query);
         }
       });
 
@@ -382,8 +236,10 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
       selector.listId.$in = queryLists;
     }
 
-    if (queryParams.comments.length) {
-      const cardIds = CardComments.textSearch(userId, queryParams.comments).map(
+    if (queryParams.hasOperator(OPERATOR_COMMENT)) {
+      const cardIds = CardComments.textSearch(
+        userId,
+        queryParams.getPredicates(OPERATOR_COMMENT),
         com => {
           return com.cardId;
         },
@@ -391,85 +247,63 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
       if (cardIds.length) {
         selector._id = { $in: cardIds };
       } else {
-        errors.notFound.comments.push(queryParams.comments);
+        queryParams.getPredicates(OPERATOR_COMMENT).forEach(comment => {
+          errors.addNotFound(OPERATOR_COMMENT, comment);
+        });
       }
     }
 
-    ['dueAt', 'createdAt', 'modifiedAt'].forEach(field => {
-      if (queryParams[field]) {
+    [OPERATOR_DUE, OPERATOR_CREATED_AT, OPERATOR_MODIFIED_AT].forEach(field => {
+      if (queryParams.hasOperator(field)) {
         selector[field] = {};
-        selector[field][queryParams[field]['operator']] = new Date(
-          queryParams[field]['value'],
-        );
+        const predicate = queryParams.getPredicate(field);
+        selector[field][predicate.operator] = new Date(predicate.value);
       }
     });
 
-    const queryMembers = [];
-    const queryAssignees = [];
-    if (queryParams.users.length) {
-      queryParams.users.forEach(query => {
-        const users = Users.find({
-          username: query,
-        });
-        if (users.count()) {
-          users.forEach(user => {
-            queryMembers.push(user._id);
-            queryAssignees.push(user._id);
-          });
+    const queryUsers = {};
+    queryUsers[OPERATOR_ASSIGNEE] = [];
+    queryUsers[OPERATOR_MEMBER] = [];
+    queryUsers[OPERATOR_CREATOR] = [];
+
+    if (queryParams.hasOperator(OPERATOR_USER)) {
+      const users = [];
+      queryParams.getPredicates(OPERATOR_USER).forEach(username => {
+        const user = Users.findOne({ username });
+        if (user) {
+          users.push(user._id);
         } else {
-          errors.notFound.users.push(query);
+          errors.addNotFound(OPERATOR_USER, username);
         }
       });
-    }
-
-    if (queryParams.members.length) {
-      queryParams.members.forEach(query => {
-        const users = Users.find({
-          username: query,
+      if (users.length) {
+        selector.$and.push({
+          $or: [{ members: { $in: users } }, { assignees: { $in: users } }],
         });
-        if (users.count()) {
-          users.forEach(user => {
-            queryMembers.push(user._id);
-          });
-        } else {
-          errors.notFound.members.push(query);
-        }
-      });
+      }
     }
 
-    if (queryParams.assignees.length) {
-      queryParams.assignees.forEach(query => {
-        const users = Users.find({
-          username: query,
+    [OPERATOR_MEMBER, OPERATOR_ASSIGNEE, OPERATOR_CREATOR].forEach(key => {
+      if (queryParams.hasOperator(key)) {
+        const users = [];
+        queryParams.getPredicates(key).forEach(username => {
+          const user = Users.findOne({ username });
+          if (user) {
+            users.push(user._id);
+          } else {
+            errors.addNotFound(key, username);
+          }
         });
-        if (users.count()) {
-          users.forEach(user => {
-            queryAssignees.push(user._id);
-          });
-        } else {
-          errors.notFound.assignees.push(query);
+        if (users.length) {
+          selector[key] = { $in: users };
         }
-      });
-    }
+      }
+    });
 
-    if (queryMembers.length && queryAssignees.length) {
-      selector.$and.push({
-        $or: [
-          { members: { $in: queryMembers } },
-          { assignees: { $in: queryAssignees } },
-        ],
-      });
-    } else if (queryMembers.length) {
-      selector.members = { $in: queryMembers };
-    } else if (queryAssignees.length) {
-      selector.assignees = { $in: queryAssignees };
-    }
-
-    if (queryParams.labels.length) {
-      queryParams.labels.forEach(label => {
-        const queryLabels = [];
-
-        let boards = Boards.userSearch(userId, {
+    if (queryParams.hasOperator(OPERATOR_LABEL)) {
+      const queryLabels = [];
+      queryParams.getPredicates(OPERATOR_LABEL).forEach(label => {
+        let boards = Boards.userBoards(userId, null, {
           labels: { $elemMatch: { color: label.toLowerCase() } },
         });
 
@@ -493,7 +327,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
           const reLabel = new RegExp(escapeForRegex(label), 'i');
           // eslint-disable-next-line no-console
           // console.log('reLabel:', reLabel);
-          boards = Boards.userSearch(userId, {
+          boards = Boards.userBoards(userId, null, {
             labels: { $elemMatch: { name: reLabel } },
           });
 
@@ -501,6 +335,9 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
             boards.forEach(board => {
               board.labels
                 .filter(boardLabel => {
+                  if (!boardLabel.name) {
+                    return false;
+                  }
                   return boardLabel.name.match(reLabel);
                 })
                 .forEach(boardLabel => {
@@ -508,39 +345,50 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
                 });
             });
           } else {
-            errors.notFound.labels.push(label);
+            errors.addNotFound(OPERATOR_LABEL, label);
           }
         }
-
-        selector.labelIds = { $in: queryLabels };
       });
+      if (queryLabels.length) {
+        // eslint-disable-next-line no-console
+        // console.log('queryLabels:', queryLabels);
+        selector.labelIds = { $in: _.uniq(queryLabels) };
+      }
     }
 
-    if (queryParams.has.length) {
-      queryParams.has.forEach(has => {
+    if (queryParams.hasOperator(OPERATOR_HAS)) {
+      queryParams.getPredicates(OPERATOR_HAS).forEach(has => {
         switch (has.field) {
-          case 'attachment':
-            const attachments = Attachments.find({}, { fields: { cardId: 1 } });
+          case PREDICATE_ATTACHMENT:
             selector.$and.push({
-              _id: { $in: attachments.map(a => a.cardId) },
+              _id: {
+                $in: Attachments.find({}, { fields: { cardId: 1 } }).map(
+                  a => a.cardId,
+                ),
+              },
             });
             break;
-          case 'checklist':
-            const checklists = Checklists.find({}, { fields: { cardId: 1 } });
-            selector.$and.push({ _id: { $in: checklists.map(a => a.cardId) } });
+          case PREDICATE_CHECKLIST:
+            selector.$and.push({
+              _id: {
+                $in: Checklists.find({}, { fields: { cardId: 1 } }).map(
+                  a => a.cardId,
+                ),
+              },
+            });
             break;
-          case 'description':
-          case 'startAt':
-          case 'dueAt':
-          case 'endAt':
+          case PREDICATE_DESCRIPTION:
+          case PREDICATE_START_AT:
+          case PREDICATE_DUE_AT:
+          case PREDICATE_END_AT:
             if (has.exists) {
               selector[has.field] = { $exists: true, $nin: [null, ''] };
             } else {
               selector[has.field] = { $in: [null, ''] };
             }
             break;
-          case 'assignees':
-          case 'members':
+          case PREDICATE_ASSIGNEES:
+          case PREDICATE_MEMBERS:
             if (has.exists) {
               selector[has.field] = { $exists: true, $nin: [null, []] };
             } else {
@@ -570,26 +418,26 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
 
       const attachments = Attachments.find({ 'original.name': regex });
 
-      // const comments = CardComments.find(
-      //   { text: regex },
-      //   { fields: { cardId: 1 } },
-      // );
+      const comments = CardComments.find(
+        { text: regex },
+        { fields: { cardId: 1 } },
+      );
 
       selector.$and.push({
         $or: [
           { title: regex },
           { description: regex },
           { customFields: { $elemMatch: { value: regex } } },
-          {
-            _id: {
-              $in: CardComments.textSearch(userId, [queryParams.text]).map(
-                com => com.cardId,
-              ),
-            },
-          },
+          // {
+          //   _id: {
+          //     $in: CardComments.textSearch(userId, [queryParams.text]).map(
+          //       com => com.cardId,
+          //     ),
+          //   },
+          // },
           { _id: { $in: checklists.map(list => list.cardId) } },
           { _id: { $in: attachments.map(attach => attach.cardId) } },
-          // { _id: { $in: comments.map(com => com.cardId) } },
+          { _id: { $in: comments.map(com => com.cardId) } },
         ],
       });
     }
@@ -600,9 +448,34 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
   }
 
   // eslint-disable-next-line no-console
-  // console.log('selector:', selector);
+  console.log('selector:', selector);
   // eslint-disable-next-line no-console
-  // console.log('selector.$and:', selector.$and);
+  console.log('selector.$and:', selector.$and);
+
+  const query = new Query();
+  query.selector = selector;
+  query.setQueryParams(queryParams);
+  query._errors = errors;
+
+  return query;
+}
+
+function buildProjection(query) {
+  // eslint-disable-next-line no-console
+  // console.log('query:', query);
+  let skip = 0;
+  if (query.getQueryParams().skip) {
+    skip = query.getQueryParams().skip;
+  }
+  let limit = DEFAULT_LIMIT;
+  const configLimit = parseInt(process.env.RESULTS_PER_PAGE, 10);
+  if (!isNaN(configLimit) && configLimit > 0) {
+    limit = configLimit;
+  }
+
+  if (query.getQueryParams().hasOperator(OPERATOR_LIMIT)) {
+    limit = query.getQueryParams().getPredicate(OPERATOR_LIMIT);
+  }
 
   const projection = {
     fields: {
@@ -622,6 +495,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
       modifiedAt: 1,
       labelIds: 1,
       customFields: 1,
+      userId: 1,
     },
     sort: {
       boardId: 1,
@@ -633,10 +507,14 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
     limit,
   };
 
-  if (queryParams.sort) {
-    const order = queryParams.sort.order === 'asc' ? 1 : -1;
-    switch (queryParams.sort.name) {
-      case 'dueAt':
+  if (query.getQueryParams().hasOperator(OPERATOR_SORT)) {
+    const order =
+      query.getQueryParams().getPredicate(OPERATOR_SORT).order ===
+      ORDER_ASCENDING
+        ? 1
+        : -1;
+    switch (query.getQueryParams().getPredicate(OPERATOR_SORT).name) {
+      case PREDICATE_DUE_AT:
         projection.sort = {
           dueAt: order,
           boardId: 1,
@@ -645,7 +523,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
           sort: 1,
         };
         break;
-      case 'modifiedAt':
+      case PREDICATE_MODIFIED_AT:
         projection.sort = {
           modifiedAt: order,
           boardId: 1,
@@ -654,7 +532,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
           sort: 1,
         };
         break;
-      case 'createdAt':
+      case PREDICATE_CREATED_AT:
         projection.sort = {
           createdAt: order,
           boardId: 1,
@@ -663,7 +541,7 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
           sort: 1,
         };
         break;
-      case 'system':
+      case PREDICATE_SYSTEM:
         projection.sort = {
           boardId: order,
           swimlaneId: order,
@@ -678,77 +556,31 @@ Meteor.publish('globalSearch', function(sessionId, queryParams) {
   // eslint-disable-next-line no-console
   // console.log('projection:', projection);
 
-  return findCards(sessionId, selector, projection, errors);
-});
+  query.projection = projection;
 
-Meteor.publish('brokenCards', function() {
-  const user = Users.findOne({ _id: this.userId });
+  return query;
+}
 
-  const permiitedBoards = [null];
-  let selector = {};
-  selector.$or = [
-    { permission: 'public' },
-    { members: { $elemMatch: { userId: user._id, isActive: true } } },
+function buildQuery(queryParams) {
+  const query = buildSelector(queryParams);
+
+  return buildProjection(query);
+}
+
+Meteor.publish('brokenCards', function(sessionId) {
+  check(sessionId, String);
+
+  const params = new QueryParams();
+  params.addPredicate(OPERATOR_STATUS, PREDICATE_ALL);
+  const query = buildQuery(params);
+  query.selector.$or = [
+    { boardId: { $in: [null, ''] } },
+    { swimlaneId: { $in: [null, ''] } },
+    { listId: { $in: [null, ''] } },
   ];
+  // console.log('brokenCards selector:', query.selector);
 
-  Boards.find(selector).forEach(board => {
-    permiitedBoards.push(board._id);
-  });
-
-  selector = {
-    boardId: { $in: permiitedBoards },
-    $or: [
-      { boardId: { $in: [null, ''] } },
-      { swimlaneId: { $in: [null, ''] } },
-      { listId: { $in: [null, ''] } },
-    ],
-  };
-
-  const cards = Cards.find(selector, {
-    fields: {
-      _id: 1,
-      archived: 1,
-      boardId: 1,
-      swimlaneId: 1,
-      listId: 1,
-      title: 1,
-      type: 1,
-      sort: 1,
-      members: 1,
-      assignees: 1,
-      colors: 1,
-      dueAt: 1,
-    },
-  });
-
-  const boards = [];
-  const swimlanes = [];
-  const lists = [];
-  const users = [];
-
-  cards.forEach(card => {
-    if (card.boardId) boards.push(card.boardId);
-    if (card.swimlaneId) swimlanes.push(card.swimlaneId);
-    if (card.listId) lists.push(card.listId);
-    if (card.members) {
-      card.members.forEach(userId => {
-        users.push(userId);
-      });
-    }
-    if (card.assignees) {
-      card.assignees.forEach(userId => {
-        users.push(userId);
-      });
-    }
-  });
-
-  return [
-    cards,
-    Boards.find({ _id: { $in: boards } }),
-    Swimlanes.find({ _id: { $in: swimlanes } }),
-    Lists.find({ _id: { $in: lists } }),
-    Users.find({ _id: { $in: users } }, { fields: Users.safeFields }),
-  ];
+  return findCards(sessionId, query);
 });
 
 Meteor.publish('nextPage', function(sessionId) {
@@ -758,7 +590,7 @@ Meteor.publish('nextPage', function(sessionId) {
   const projection = session.getProjection();
   projection.skip = session.lastHit;
 
-  return findCards(sessionId, session.getSelector(), projection);
+  return findCards(sessionId, new Query(session.getSelector(), projection));
 });
 
 Meteor.publish('previousPage', function(sessionId) {
@@ -768,20 +600,19 @@ Meteor.publish('previousPage', function(sessionId) {
   const projection = session.getProjection();
   projection.skip = session.lastHit - session.resultsCount - projection.limit;
 
-  return findCards(sessionId, session.getSelector(), projection);
+  return findCards(sessionId, new Query(session.getSelector(), projection));
 });
 
-function findCards(sessionId, selector, projection, errors = null) {
+function findCards(sessionId, query) {
   const userId = Meteor.userId();
 
   // eslint-disable-next-line no-console
-  // console.log('selector:', selector);
+  // console.log('selector:', query.selector);
+  // console.log('selector.$and:', query.selector.$and);
   // eslint-disable-next-line no-console
   // console.log('projection:', projection);
-  let cards;
-  if (!errors || !errors.hasErrors()) {
-    cards = Cards.find(selector, projection);
-  }
+
+  const cards = Cards.find(query.selector, query.projection);
   // eslint-disable-next-line no-console
   // console.log('count:', cards.count());
 
@@ -791,19 +622,17 @@ function findCards(sessionId, selector, projection, errors = null) {
       lastHit: 0,
       resultsCount: 0,
       cards: [],
-      selector: SessionData.pickle(selector),
-      projection: SessionData.pickle(projection),
+      selector: SessionData.pickle(query.selector),
+      projection: SessionData.pickle(query.projection),
+      errors: query.errors(),
     },
   };
-  if (errors) {
-    update.$set.errors = errors.errorMessages();
-  }
 
   if (cards) {
     update.$set.totalHits = cards.count();
     update.$set.lastHit =
-      projection.skip + projection.limit < cards.count()
-        ? projection.skip + projection.limit
+      query.projection.skip + query.projection.limit < cards.count()
+        ? query.projection.skip + query.projection.limit
         : cards.count();
     update.$set.cards = cards.map(card => {
       return card._id;
@@ -811,6 +640,12 @@ function findCards(sessionId, selector, projection, errors = null) {
     update.$set.resultsCount = update.$set.cards.length;
   }
 
+  // eslint-disable-next-line no-console
+  // console.log('sessionId:', sessionId);
+  // eslint-disable-next-line no-console
+  // console.log('userId:', userId);
+  // eslint-disable-next-line no-console
+  // console.log('update:', update);
   SessionData.upsert({ userId, sessionId }, update);
 
   // remove old session data
@@ -836,6 +671,9 @@ function findCards(sessionId, selector, projection, errors = null) {
       if (card.boardId) boards.push(card.boardId);
       if (card.swimlaneId) swimlanes.push(card.swimlaneId);
       if (card.listId) lists.push(card.listId);
+      if (card.userId) {
+        users.push(card.userId);
+      }
       if (card.members) {
         card.members.forEach(userId => {
           users.push(userId);
@@ -881,5 +719,5 @@ function findCards(sessionId, selector, projection, errors = null) {
     ];
   }
 
-  return [SessionData.find({ userId: userId, sessionId })];
+  return [SessionData.find({ userId, sessionId })];
 }

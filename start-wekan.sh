@@ -23,6 +23,9 @@
       # This is local port where Wekan Node.js runs, same as below on Caddyfile settings.
       export PORT=2000
       #---------------------------------------------
+      # ==== NUMBER OF SEARCH RESULTS PER PAGE BY DEFAULT ====
+      #export RESULTS_PER_PAGE=20
+      #---------------------------------------------
       # Wekan Export Board works when WITH_API=true.
       # If you disable Wekan API with false, Export Board does not work.
       export WITH_API='true'
@@ -384,6 +387,9 @@
       #export SAML_IDENTIFIER_FORMAT=
       #export SAML_LOCAL_PROFILE_MATCH_ATTRIBUTE=
       #export SAML_ATTRIBUTES=
+      #---------------------------------------------------------------------
+      # Wait spinner to use
+      #export WAIT_SPINNER=Bounce
       #---------------------------------------------------------------------
       node main.js
       # & >> ../../wekan.log

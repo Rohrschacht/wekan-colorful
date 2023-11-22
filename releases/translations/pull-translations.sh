@@ -63,6 +63,9 @@ tx pull -f -l ka
 echo "German:"
 tx pull -f -l de
 
+echo "German (Switzerland) => Deutsch (Schweiz):"
+tx pull -f -l de_CH
+
 echo "Greek:"
 tx pull -f -l el
 
@@ -150,6 +153,9 @@ tx pull -f -l es_AR
 
 echo "Spanish (Chile):"
 tx pull -f -l es_CL
+
+echo "Spanish (Latin America)":
+tx pull -f -l es_419
 
 echo "Spanish (Mexico)":
 tx pull -f -l es_MX

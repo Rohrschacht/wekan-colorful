@@ -730,6 +730,14 @@ BlazeComponent.extendComponent({
     return this.currentBoard.allowsSubtasks;
   },
 
+  allowsCreator() {
+    return (
+      this.currentBoard.allowsCreator === null ||
+      this.currentBoard.allowsCreator === undefined ||
+      this.currentBoard.allowsCreator
+    );
+  },
+
   allowsMembers() {
     return this.currentBoard.allowsMembers;
   },
@@ -744,6 +752,10 @@ BlazeComponent.extendComponent({
 
   allowsRequestedBy() {
     return this.currentBoard.allowsRequestedBy;
+  },
+
+  allowsCardSortingByNumber() {
+    return this.currentBoard.allowsCardSortingByNumber;
   },
 
   allowsLabels() {
@@ -889,6 +901,19 @@ BlazeComponent.extendComponent({
             this.currentBoard.allowsSubtasks,
           );
         },
+        'click .js-field-has-creator'(evt) {
+          evt.preventDefault();
+          this.currentBoard.allowsCreator = !this.currentBoard.allowsCreator;
+          this.currentBoard.setAllowsCreator(this.currentBoard.allowsCreator);
+          $(`.js-field-has-creator ${MCB}`).toggleClass(
+            CKCLS,
+            this.currentBoard.allowsCreator,
+          );
+          $('.js-field-has-creator').toggleClass(
+            CKCLS,
+            this.currentBoard.allowsCreator,
+          );
+        },
         'click .js-field-has-members'(evt) {
           evt.preventDefault();
           this.currentBoard.allowsMembers = !this.currentBoard.allowsMembers;
@@ -945,6 +970,22 @@ BlazeComponent.extendComponent({
           $('.js-field-has-requested-by').toggleClass(
             CKCLS,
             this.currentBoard.allowsRequestedBy,
+          );
+        },
+        'click .js-field-has-card-sorting-by-number'(evt) {
+          evt.preventDefault();
+          this.currentBoard.allowsCardSortingByNumber = !this.currentBoard
+            .allowsCardSortingByNumber;
+          this.currentBoard.setAllowsCardSortingByNumber(
+            this.currentBoard.allowsCardSortingByNumber,
+          );
+          $(`.js-field-has-card-sorting-by-number ${MCB}`).toggleClass(
+            CKCLS,
+            this.currentBoard.allowsCardSortingByNumber,
+          );
+          $('.js-field-has-card-sorting-by-number').toggleClass(
+            CKCLS,
+            this.currentBoard.allowsCardSortingByNumber,
           );
         },
         'click .js-field-has-labels'(evt) {

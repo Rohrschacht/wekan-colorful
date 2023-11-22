@@ -49,7 +49,7 @@ Template.editor.onRendered(() => {
           ['para', ['ul', 'ol', 'paragraph']],
           ['table', ['table']],
           //['insert', ['link', 'picture', 'video']], // iframe tag will be sanitized TODO if iframe[class=note-video-clip] can be added into safe list, insert video can be enabled
-          //['insert', ['link', 'picture']], // modal popup has issue somehow :(
+          ['insert', ['link']], //, 'picture']], // modal popup has issue somehow :(
           ['view', ['fullscreen', 'help']],
         ];
     const cleanPastedHTML = function(input) {
@@ -145,6 +145,7 @@ Template.editor.onRendered(() => {
                 const MAX_IMAGE_PIXEL = Utils.MAX_IMAGE_PIXEL;
                 const COMPRESS_RATIO = Utils.IMAGE_COMPRESS_RATIO;
                 const insertImage = src => {
+                  // process all image upload types to the description/comment window
                   const img = document.createElement('img');
                   img.src = src;
                   img.setAttribute('width', '100%');
@@ -210,7 +211,16 @@ Template.editor.onRendered(() => {
                 }
               }
             },
-            onPaste() {
+            onPaste(e) {
+              var clipboardData = e.clipboardData;
+              var pastedData = clipboardData.getData('Text');
+
+              //if pasted data is an image, exit
+              if (!pastedData.length) {
+                e.preventDefault();
+                return;
+              }
+
               // clear up unwanted tag info when user pasted in text
               const thisNote = this;
               const updatePastedText = function(object) {
@@ -219,7 +229,7 @@ Template.editor.onRendered(() => {
                 // (and multiplies by pasting more) by changing paste "p" to "br".
                 // Fixes https://github.com/wekan/wekan/2890 .
                 // == Fix Start ==
-                someNote.execCommand('defaultParagraphSeparator', false, 'br');
+                //someNote.execCommand('defaultParagraphSeparator', false, 'br');
                 // == Fix End ==
                 const original = someNote.summernote('code');
                 const cleaned = cleanPastedHTML(original); //this is where to call whatever clean function you want. I have mine in a different file, called CleanPastedHTML.
@@ -234,17 +244,17 @@ Template.editor.onRendered(() => {
             },
           },
           dialogsInBody: true,
-          disableDragAndDrop: true,
+          spellCheck: true,
+          disableGrammar: false,
+          disableDragAndDrop: false,
           toolbar,
           popover: {
             image: [
-              [
-                'image',
-                ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone'],
-              ],
+              ['imagesize', ['imageSize100', 'imageSize50', 'imageSize25']],
               ['float', ['floatLeft', 'floatRight', 'floatNone']],
               ['remove', ['removeMedia']],
             ],
+            link: [['link', ['linkDialogShow', 'unlink']]],
             table: [
               ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
               ['delete', ['deleteRow', 'deleteCol', 'deleteTable']],
@@ -263,10 +273,12 @@ Template.editor.onRendered(() => {
   }
 });
 
-import sanitizeXss from 'xss';
+import DOMPurify from 'dompurify';
 
 // Additional  safeAttrValue function to allow for other specific protocols
 // See https://github.com/leizongmin/js-xss/issues/52#issuecomment-241354114
+
+/*
 function mySafeAttrValue(tag, name, value, cssFilter) {
   // only when the tag is 'a' and attribute is 'href'
   // then use your custom function
@@ -292,6 +304,7 @@ function mySafeAttrValue(tag, name, value, cssFilter) {
     return sanitizeXss.safeAttrValue(tag, name, value, cssFilter);
   }
 }
+*/
 
 // XXX I believe we should compute a HTML rendered field on the server that
 // would handle markdown and user mentions. We can simply have two
@@ -307,7 +320,9 @@ Blaze.Template.registerHelper(
     let content = Blaze.toHTML(view.templateContentBlock);
     const currentBoard = Boards.findOne(Session.get('currentBoard'));
     if (!currentBoard)
-      return HTML.Raw(sanitizeXss(content, { safeAttrValue: mySafeAttrValue }));
+      return HTML.Raw(
+        DOMPurify.sanitize(content, { ALLOW_UNKNOWN_PROTOCOLS: true }),
+      );
     const knowedUsers = currentBoard.members.map(member => {
       const u = Users.findOne(member.userId);
       if (u) {
@@ -351,7 +366,9 @@ Blaze.Template.registerHelper(
       content = content.replace(fullMention, Blaze.toHTML(link));
     }
 
-    return HTML.Raw(sanitizeXss(content, { safeAttrValue: mySafeAttrValue }));
+    return HTML.Raw(
+      DOMPurify.sanitize(content, { ALLOW_UNKNOWN_PROTOCOLS: true }),
+    );
   }),
 );
 

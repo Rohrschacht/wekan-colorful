@@ -5,10 +5,6 @@ template(name="sidebar")
     //  title="{{showTongueTitle}}")
     //  i.fa.fa-navicon
     .sidebar-shadow
-      .sidebar-content.sidebar-shortcuts
-        a.board-header-btn.js-shortcuts
-          i.fa.fa-keyboard-o
-          span {{_ 'keyboard-shortcuts' }}
       .sidebar-content.js-board-sidebar-content
         //a.hide-btn.js-hide-sidebar
         //  i.fa.fa-navicon
@@ -23,7 +19,7 @@ template(name='homeSidebar')
   hr
   +labelsWidget
   ul#cards.label-text-hidden
-    a.flex.js-toggle-minicard-label-text
+    a.flex.js-toggle-minicard-label-text(title="{{_ 'hide-minicard-label-text'}}")
       span {{_ 'hide-minicard-label-text'}}
       b &nbsp;
       .materialCheckBox(class="{{#if hiddenMinicardLabelText}}is-checked{{/if}}")
@@ -39,6 +35,12 @@ template(name="membersWidget")
     h3
       i.fa.fa-users
       | {{_ 'members'}}
+
+      .sidebar-shortcuts
+        a.board-header-btn.js-shortcuts(title="{{_ 'keyboard-shortcuts' }}")
+          i.fa.fa-keyboard-o
+          span {{_ 'keyboard-shortcuts' }}
+
       unless currentUser.isCommentOnly
         unless currentUser.isWorker
           a.board-header-btn.js-open-board-menu(title="{{_ 'boardMenuPopup-title'}}").right
@@ -49,10 +51,10 @@ template(name="membersWidget")
         +userAvatar(userId=this.userId showStatus=true)
       if isSandstorm
         if currentUser.isBoardMember
-          a.member.add-member.sandstorm-powerbox-request-identity
+          a.member.add-member.sandstorm-powerbox-request-identity(title="{{_ 'add-members'}}")
             i.fa.fa-plus
       else if currentUser.isBoardAdmin
-        a.member.add-member.js-manage-board-members
+        a.member.add-member.js-manage-board-members(title="{{_ 'add-members'}}")
           i.fa.fa-plus
       .clearfix
   if isInvited
@@ -105,6 +107,14 @@ template(name="boardCardSettingsPopup")
         span
           i.fa.fa-users
           | {{_ 'members'}}
+
+    div.check-div
+      a.flex.js-field-has-creator(class="{{#if allowsCreator}}is-checked{{/if}}")
+        .materialCheckBox(class="{{#if allowsCreator}}is-checked{{/if}}")
+        span
+          i.fa.fa-user
+          | {{_ 'creator'}}
+
     div.check-div
       a.flex.js-field-has-assignee(class="{{#if allowsAssignee}}is-checked{{/if}}")
         .materialCheckBox(class="{{#if allowsAssignee}}is-checked{{/if}}")
@@ -123,6 +133,12 @@ template(name="boardCardSettingsPopup")
         span
           i.fa.fa-user-plus
           | {{_ 'requested-by'}}
+    div.check-div
+      a.flex.js-field-has-card-sorting-by-number(class="{{#if allowsCardSortingByNumber}}is-checked{{/if}}")
+        .materialCheckBox(class="{{#if allowsCardSortingByNumber}}is-checked{{/if}}")
+        span
+          i.fa.fa-sort
+          | {{_ 'card-sorting-by-number'}}
     div.check-div
       a.flex.js-field-has-labels(class="{{#if allowsLabels}}is-checked{{/if}}")
         .materialCheckBox(class="{{#if allowsLabels}}is-checked{{/if}}")
@@ -354,7 +370,7 @@ template(name="labelsWidget")
               +viewer
                 = name
       if currentUser.isBoardAdmin
-        a.card-label.add-label.js-add-label
+        a.card-label.add-label.js-add-label(title="{{_ 'label-create'}}")
           i.fa.fa-plus
 
 template(name="memberPopup")

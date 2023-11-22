@@ -122,6 +122,8 @@ template(name='email')
 
 template(name='accountSettings')
   ul#account-setting.setting-detail
+    li
+      button.js-all-hide-system-messages.primary {{_ 'hide-system-messages-of-all-users'}}
     li.accounts-form
       .title {{_ 'accounts-allowEmailChange'}}
       .form-group.flex
@@ -129,23 +131,18 @@ template(name='accountSettings')
         span {{_ 'yes'}}
         input.wekan-form-control#accounts-allowEmailChange(type="radio" name="allowEmailChange" value="false" checked="{{#unless allowEmailChange}}checked{{/unless}}")
         span {{_ 'no'}}
-    li
-    li.accounts-form
       .title {{_ 'accounts-allowUserNameChange'}}
       .form-group.flex
         input.wekan-form-control#accounts-allowUserNameChange(type="radio" name="allowUserNameChange" value="true" checked="{{#if allowUserNameChange}}checked{{/if}}")
         span {{_ 'yes'}}
         input.wekan-form-control#accounts-allowUserNameChange(type="radio" name="allowUserNameChange" value="false" checked="{{#unless allowUserNameChange}}checked{{/unless}}")
         span {{_ 'no'}}
-    li
-    li.accounts-form
       .title {{_ 'accounts-allowUserDelete'}}
       .form-group.flex
         input.wekan-form-control#accounts-allowUserDelete(type="radio" name="allowUserDelete" value="true" checked="{{#if allowUserDelete}}checked{{/if}}")
         span {{_ 'yes'}}
         input.wekan-form-control#accounts-allowUserDelete(type="radio" name="allowUserDelete" value="false" checked="{{#unless allowUserDelete}}checked{{/unless}}")
         span {{_ 'no'}}
-    li
       button.js-accounts-save.primary {{_ 'save'}}
 
 template(name='announcementSettings')
@@ -176,6 +173,9 @@ template(name='layoutSettings')
     li.layout-form
       .title {{_ 'default-authentication-method'}}
       +selectAuthenticationMethod(authenticationMethod=currentSetting.defaultAuthenticationMethod)
+    li.layout-form
+      .title {{_ 'wait-spinner'}}
+      +selectSpinnerName(spinnerName=currentSetting.spinnerName)
     li.layout-form
       .title {{_ 'custom-product-name'}}
       .form-group
@@ -211,6 +211,10 @@ template(name='layoutSettings')
       .title {{_ 'custom-top-left-corner-logo-height'}}
       .form-group
         input.wekan-form-control#custom-top-left-corner-logo-height(type="text", placeholder="" value="{{currentSetting.customTopLeftCornerLogoHeight}}")
+    li.layout-form
+      .title {{_ 'automatic-linked-url-schemes'}}
+      .form-group
+        textarea#automatic-linked-url-schemes.wekan-form-control= currentSetting.automaticLinkedUrlSchemes
     li
       button.js-save-layout.primary {{_ 'save'}}
 
@@ -221,3 +225,11 @@ template(name='selectAuthenticationMethod')
         option(value="{{value}}" selected) {{_ value}}
       else
         option(value="{{value}}") {{_ value}}
+
+template(name='selectSpinnerName')
+  select#spinnerName
+    each spinner in spinners
+      if isSelected spinner
+        option(value="{{spinner}}" selected) {{_ spinner}}
+      else
+        option(value="{{spinner}}") {{_ spinner}}
